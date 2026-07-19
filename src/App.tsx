@@ -2,9 +2,11 @@ import { useEffect } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Nav } from './components/Nav'
 import { HomePage } from './pages/HomePage'
+import { AdminPage } from './pages/AdminPage'
 import { ArticlePage } from './pages/ArticlePage'
 import { ComputePage } from './pages/ComputePage'
 import { NewsIndex } from './pages/NewsIndex'
+import { QuotePage } from './pages/QuotePage'
 
 function ScrollRestore() {
   const { pathname, hash } = useLocation()
@@ -25,6 +27,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/compute" element={<ComputePage />} />
+        <Route path="/quote" element={<QuotePage />} />
+        <Route path="/admin" element={<AdminPage />} />
         <Route path="/news" element={<NewsIndex />} />
         <Route path="/news/:slug" element={<ArticlePage />} />
         <Route path="*" element={<Navigate to="/" replace />} />

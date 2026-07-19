@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { Footer } from '../components/Footer'
 
 type BadgeKind = 'available' | 'limited' | 'enquire' | 'mto'
@@ -270,7 +271,8 @@ export function ComputePage() {
             <p className="page-standfirst">
               From a single dedicated node to a full rack, Infersia provisions and operates onshore AI compute — and
               sources the world's leading GPU platforms for larger deployments. Every configuration is available for
-              enquiry, whether you need capacity on our infrastructure or hardware for your own.
+              enquiry, whether you need capacity on our infrastructure or hardware for your own.{' '}
+              <Link className="standfirst-link" to="/quote">Prefer numbers? Get an instant estimate →</Link>
             </p>
           </header>
 

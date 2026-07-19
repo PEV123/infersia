@@ -6,6 +6,9 @@ export default defineConfig({
   server: {
     port: 5180,
     strictPort: true,
+    proxy: {
+      '/api': 'http://localhost:8790',
+    },
   },
   build: {
     chunkSizeWarningLimit: 1500,

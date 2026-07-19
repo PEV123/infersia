@@ -13,6 +13,7 @@ export function Nav() {
       <nav className="nav-links" aria-label="Primary">
         <Link to="/#capabilities">Capabilities</Link>
         <Link to="/compute" aria-current={pathname === '/compute' ? 'page' : undefined}>Compute</Link>
+        <Link to="/quote" aria-current={pathname === '/quote' ? 'page' : undefined}>Pricing</Link>
         <Link to="/#sovereignty-wrap">Sovereignty</Link>
         <Link to="/news" aria-current={pathname.startsWith('/news') ? 'page' : undefined}>News</Link>
         <Link to="/#contact">Contact</Link>

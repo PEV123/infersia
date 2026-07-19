@@ -12,6 +12,7 @@ export function Footer() {
         <nav className="footer-links" aria-label="Footer">
           <Link to="/#capabilities">Capabilities</Link>
           <Link to="/compute">Compute</Link>
+          <Link to="/quote">Pricing</Link>
           <Link to="/#sovereignty-wrap">Sovereignty</Link>
           <Link to="/news">News</Link>
           <Link to="/#contact">Contact</Link>

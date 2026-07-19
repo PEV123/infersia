@@ -1,0 +1,1 @@
+{"ts":"2026-07-19T23:35:32.497Z","name":"Deploy Verification Test","org":"Infersia QA","email":"qa@infersia.au","phone":"","context":{"model":"glm-5-2","modelName":"GLM-5.2","tier":"5 GPU Dedicated","tokensPerDay":20000000,"inputShare":0.8,"term":12,"comparator":"Claude Opus 4.8","quotable":true,"infersiaMonthly":11800,"apiMonthlyAud":7817,"annualSaving":-52794}}

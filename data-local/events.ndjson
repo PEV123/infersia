@@ -1,0 +1,15 @@
+{"ts":"2026-07-19T23:34:10.210Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"quote_page_viewed","props":{}}
+{"ts":"2026-07-19T23:34:11.469Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"usage_changed","props":{"tokensPerDay":5000000}}
+{"ts":"2026-07-19T23:34:29.260Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"model_selected","props":{"model":"glm-5-2"}}
+{"ts":"2026-07-19T23:34:30.470Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"usage_changed","props":{"tokensPerDay":20000000}}
+{"ts":"2026-07-19T23:34:31.467Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"quote_viewed","props":{"model":"glm-5-2","tokensPerDay":20000000,"term":12,"vs":"fable-5","saving":41011}}
+{"ts":"2026-07-19T23:34:54.639Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"model_selected","props":{"model":"qwen3-235b"}}
+{"ts":"2026-07-19T23:34:54.640Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"comparator_changed","props":{"vs":"opus-48"}}
+{"ts":"2026-07-19T23:34:55.466Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"usage_changed","props":{"tokensPerDay":1000000}}
+{"ts":"2026-07-19T23:34:56.469Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"quote_viewed","props":{"model":"qwen3-235b","tokensPerDay":1000000,"term":12,"vs":"opus-48","saving":-57210}}
+{"ts":"2026-07-19T23:35:17.026Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"model_selected","props":{"model":"kimi-k3"}}
+{"ts":"2026-07-19T23:35:30.625Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"model_selected","props":{"model":"glm-5-2"}}
+{"ts":"2026-07-19T23:35:31.478Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"usage_changed","props":{"tokensPerDay":20000000}}
+{"ts":"2026-07-19T23:35:32.497Z","sid":"server","event":"quote_submitted","props":{"model":"glm-5-2","source":"lead"}}
+{"ts":"2026-07-19T23:35:32.505Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"quote_viewed","props":{"model":"glm-5-2","tokensPerDay":20000000,"term":12,"vs":"opus-48","saving":-52794}}
+{"ts":"2026-07-19T23:35:32.506Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"quote_submitted","props":{"model":"glm-5-2","tokensPerDay":20000000,"term":12,"vs":"opus-48"}}
