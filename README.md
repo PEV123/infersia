@@ -24,12 +24,40 @@ npm run build      # type-checks then bundles to dist/
 
 ## Deploy
 
-Live at **https://infersia.onrender.com** — Render static site `infersia`
-(`srv-d9e3t8v41pts73e6mrmg`, Mediapedia workspace), auto-deploying from
-`main` on [PEV123/infersia](https://github.com/PEV123/infersia).
-Build: `npm ci && npm run build` → publish `dist/`, `NODE_VERSION=22`,
-SPA rewrite `/* → /index.html` (so `/compute` and `/news/...` load directly).
+Live at **https://infersia.onrender.com** — Render **web service** `infersia`
+(`srv-d9elv55aeets73bfcri0`, Mediapedia workspace, Singapore region, starter plan),
+auto-deploying from `main` on [PEV123/infersia](https://github.com/PEV123/infersia).
+Build `npm ci && npm run build`, start `npm start` (Express serves `dist/` + the API).
+A 1GB persistent disk is mounted at `/data` for analytics/lead storage.
+Env: `NODE_VERSION=22`, `DATA_DIR=/data`, `ADMIN_PASSWORD` (rotate in the Render
+dashboard), optional `GHL_WEBHOOK_URL` (POSTs each lead to GoHighLevel when set).
 To ship: commit to `main` and push.
+
+## Quote builder, analytics & admin
+
+- **`/quote`** — the Sovereign Quote Builder. Model registry in
+  [src/data/models.json](src/data/models.json) and tiers/API prices in
+  [src/data/pricing.json](src/data/pricing.json) — both plain JSON, editable in
+  GitHub; a push auto-deploys. Flip Kimi K3's `"badge"` to `"available"`,
+  `"quotable": true` and set its `priceLine` the day weights ship (due 27 July).
+  **Review cadence: model registry and API list prices monthly** — bump
+  `verifiedDate` in pricing.json (rendered in the page footer).
+- **Developer logos**: rendered as neutral text wordmark chips by design. If you
+  later source official brand assets per each developer's brand guidelines, add a
+  `logo` field and swap the chip — never scrape or invent marks.
+- **Analytics** — the quote page posts first-party events (`model_selected`,
+  `usage_changed`, `comparator_changed`, `quote_viewed` incl. computed saving,
+  `quote_submitted`) to `POST /api/track`. No cookies, no PII; a per-tab session
+  id groups events. Stored as NDJSON on the disk.
+- **Leads** — "Lock this quote" posts to `POST /api/quote-lead` with the full
+  quote context (model, tier, usage, term, comparator, figures).
+- **`/admin`** — password-gated dashboard (`ADMIN_PASSWORD` env; sent as an
+  `x-admin-key` header): totals, models picked, comparators, usage levels, terms,
+  the leads table, and a recent-event feed. Not linked anywhere; `robots.txt`
+  disallows it.
+
+Local dev: `npm run dev` (Vite, port 5180) + `npm run dev:api` (Express on 8790;
+Vite proxies `/api`). Set `ADMIN_PASSWORD` locally to use the admin page.
 
 ## Structure
 
