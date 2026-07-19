@@ -22,6 +22,15 @@ npm run dev        # http://localhost:5180  (https://infersia.test once added to
 npm run build      # type-checks then bundles to dist/
 ```
 
+## Deploy
+
+Live at **https://infersia.onrender.com** — Render static site `infersia`
+(`srv-d9e3t8v41pts73e6mrmg`, Mediapedia workspace), auto-deploying from
+`main` on [PEV123/infersia](https://github.com/PEV123/infersia).
+Build: `npm ci && npm run build` → publish `dist/`, `NODE_VERSION=22`,
+SPA rewrite `/* → /index.html` (so `/compute` and `/news/...` load directly).
+To ship: commit to `main` and push.
+
 ## Structure
 
 - `src/pages/` — routes: `HomePage` (the 3D single-page experience), `ComputePage` (`/compute` —
