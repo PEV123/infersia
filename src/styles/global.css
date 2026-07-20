@@ -2375,6 +2375,43 @@ main {
   color: var(--text-3);
 }
 
+.frontier-copy {
+  padding: 22px 26px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(217, 164, 65, 0.22);
+  border-radius: 16px;
+  background:
+    radial-gradient(70% 120% at 50% -20%, rgba(217, 164, 65, 0.06), transparent 60%),
+    var(--surface);
+}
+
+.frontier-copy p:last-child {
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-2);
+  max-width: 74ch;
+}
+
+.est-pending-banner {
+  margin-bottom: 16px;
+  padding: 12px 18px;
+  border: 1px dashed rgba(143, 163, 176, 0.4);
+  border-radius: 12px;
+  background: rgba(143, 163, 176, 0.06);
+  color: #a9bcc8;
+  font-size: 13.5px;
+  letter-spacing: 0.01em;
+}
+
+.est-madeorder {
+  margin-top: 14px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--gold-bright);
+  letter-spacing: 0.01em;
+}
+
 .verdict {
   margin-top: 16px;
   padding: 18px 24px;

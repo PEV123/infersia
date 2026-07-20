@@ -71,6 +71,18 @@ const PLATFORMS: Platform[] = [
     enquiryType: 'Dedicated compute',
   },
   {
+    name: 'High-Memory Frontier Node',
+    variant: '288GB-class · AMD Instinct',
+    badge: 'enquire',
+    descriptor:
+      '2.3TB VRAM in a single chassis — purpose-built for trillion-parameter open models with native FP4 serving.',
+    specs: ['8× 288GB HBM3e', '2,304GB total VRAM', 'Liquid-cooled high-density', 'Native FP4 serving'],
+    ideal: 'DeepSeek V4 Pro, Qwen 3.8, Kimi K3, frontier-exclusive deployments.',
+    tier: 1,
+    tags: ['inference'],
+    enquiryType: 'Dedicated compute',
+  },
+  {
     name: 'NVIDIA RTX PRO 6000',
     variant: 'Blackwell — New Units',
     badge: 'enquire',
@@ -377,6 +389,15 @@ export function ComputePage() {
               </details>
             ))}
           </section>
+
+          <div className="quote-disclaimers">
+            <p>
+              All hardware, model and company names are trademarks of their respective owners (including NVIDIA and
+              AMD); Infersia is an independent Australian infrastructure provider and is not affiliated with or
+              endorsed by these organisations. Specifications and pricing indicative; final configuration confirmed
+              on enquiry.
+            </p>
+          </div>
         </div>
       </main>
       <Footer />

@@ -281,14 +281,14 @@
     "licence": "MIT",
     "context": "1M",
     "vramGb": 960,
-    "gpus": 16,
-    "tierId": "multi16",
-    "priceLine": "Multi-node → from $38,000/mo",
+    "gpus": 8,
+    "tierId": "frontier-node",
+    "priceLine": "Frontier node → from $34,000/mo",
     "badge": "enquire",
     "quotable": true,
     "strengths": [
       "The open reasoning frontier — 90.1% GPQA Diamond, ~80.6% SWE-bench Verified",
-      "Largest shipped open-weight model",
+      "Runs on a single Infersia Frontier Node (2.3TB VRAM)",
       "Full 1M context"
     ],
     "tags": [
@@ -309,15 +309,15 @@
     "licence": "Weights due 27 July 2026",
     "context": "1M",
     "vramGb": 1680,
-    "gpus": 24,
-    "tierId": "multi24",
-    "priceLine": "Conditional — enquire",
+    "gpus": 8,
+    "tierId": "frontier-node",
+    "priceLine": "Frontier node → from $38,000/mo",
     "badge": "weights-pending",
     "quotable": false,
     "conditionalNote": "Weights land 27 July 2026 — quoted conditionally until release.",
     "strengths": [
       "Frontier-class — already edges past Claude Opus 4.8 on independent rankings",
-      "The largest open model ever, landing this month"
+      "Runs on a single Infersia Frontier Node (2.3TB VRAM)"
     ],
     "tags": [
       "Frontier",
@@ -337,15 +337,15 @@
     "licence": "Announced, unreleased",
     "context": "TBC",
     "vramGb": 1440,
-    "gpus": 16,
-    "tierId": "multi16",
-    "priceLine": "Conditional — enquire",
+    "gpus": 8,
+    "tierId": "frontier-node",
+    "priceLine": "Frontier node → from $38,000/mo",
     "badge": "weights-pending",
     "quotable": false,
     "conditionalNote": "Open-weight release promised — date and licence TBC.",
     "strengths": [
       "Teased as second only to Claude Fable 5",
-      "Open-weight release promised (date & licence TBC)"
+      "Runs on a single Infersia Frontier Node (2.3TB VRAM)"
     ],
     "tags": [
       "Frontier",

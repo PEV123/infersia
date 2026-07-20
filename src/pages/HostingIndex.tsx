@@ -101,9 +101,9 @@ export function HostingIndex() {
 
           <div className="quote-disclaimers">
             <p>
-              All model and company names and logos are trademarks of their respective owners; Infersia is an
-              independent Australian infrastructure provider and is not affiliated with or endorsed by these
-              organisations.
+              All model and company names and logos are trademarks of their respective owners (including NVIDIA and
+              AMD); Infersia is an independent Australian infrastructure provider and is not affiliated with or
+              endorsed by these organisations.
             </p>
           </div>
         </div>

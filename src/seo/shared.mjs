@@ -9,16 +9,18 @@ export function modelTitle(model) {
   return `Australia Hosted ${model.name} — Dedicated & Private | Infersia`
 }
 
-export function modelDescription(model, tier) {
+export function modelDescription(model, tier, priceMonthly) {
+  const p = priceMonthly ?? tier?.price
   const price =
     model.quotable && tier
-      ? `Fixed monthly pricing from AU$${tier.price.toLocaleString('en-AU')}${tier.from ? '+' : ''}, unlimited tokens.`
+      ? `Fixed monthly pricing from AU$${p.toLocaleString('en-AU')}${tier.from ? '+' : ''}, unlimited tokens.`
       : 'Conditional pricing — reserve capacity on enquiry.'
   const base = `Run ${model.name} on dedicated GPUs in Australia — private endpoint, zero offshore processing, Australian jurisdiction end to end. ${price}`
   return base.length > 158 ? base.slice(0, 155) + '…' : base
 }
 
-export function modelFaq(model, tier) {
+export function modelFaq(model, tier, priceMonthly) {
+  const p = priceMonthly ?? tier?.price
   const faq = [
     {
       q: `Is our data used to train ${model.name}?`,
@@ -38,7 +40,7 @@ export function modelFaq(model, tier) {
       q: `What does it cost to host ${model.name} in Australia?`,
       a:
         model.quotable && tier
-          ? `${tier.from ? 'From ' : ''}AU$${tier.price.toLocaleString('en-AU')} per month ex GST — a fixed price with unlimited tokens on your dedicated hardware, not per-token or per-GPU-hour billing. Use the calculator to compare against frontier API pricing at your volume.`
+          ? `${tier.from ? 'From ' : ''}AU$${p.toLocaleString('en-AU')} per month ex GST${tier.madeToOrder ? ` — built to order, ${tier.minTermMonths ?? 24}-month minimum` : ' — a fixed price'}, unlimited tokens on your dedicated hardware. Use the calculator to compare against frontier API pricing at your volume.`
           : `${model.conditionalNote ?? 'Pricing is confirmed on enquiry.'} We can scope the configuration and reserve capacity ahead of time.`,
     },
     {

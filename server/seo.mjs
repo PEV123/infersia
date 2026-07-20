@@ -22,6 +22,7 @@ const models = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src', 'dat
 const pricing = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src', 'data', 'pricing.json'), 'utf8'))
 
 const tierById = (id) => pricing.tiers.find((t) => t.id === id)
+const effMonthly = (model, tier) => (pricing.priceOverrides && pricing.priceOverrides[model.id]) ?? tier?.price
 
 const esc = (s) =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -50,6 +51,7 @@ function faqLd(faq) {
 }
 
 function serviceLd(model, tier) {
+  const price = effMonthly(model, tier)
   const ld = {
     '@context': 'https://schema.org',
     '@type': 'Service',
@@ -57,16 +59,16 @@ function serviceLd(model, tier) {
     serviceType: 'Private LLM hosting',
     provider: { '@type': 'Organization', name: SITE_NAME, url: SITE },
     areaServed: 'AU',
-    description: modelDescription(model, tier),
+    description: modelDescription(model, tier, price),
   }
   if (model.quotable && tier && !tier.poa) {
     ld.offers = {
       '@type': 'Offer',
       priceCurrency: 'AUD',
-      price: tier.price,
+      price,
       priceSpecification: {
         '@type': 'UnitPriceSpecification',
-        price: tier.price,
+        price,
         priceCurrency: 'AUD',
         unitText: 'MONTH',
       },
@@ -86,10 +88,10 @@ export function routeMeta(pathname) {
       const tier = tierById(model.tierId)
       return {
         title: modelTitle(model),
-        description: modelDescription(model, tier),
+        description: modelDescription(model, tier, effMonthly(model, tier)),
         canonical: `${SITE}${clean}`,
         ogType: 'website',
-        jsonld: [ORG_LD, serviceLd(model, tier), faqLd(modelFaq(model, tier))],
+        jsonld: [ORG_LD, serviceLd(model, tier), faqLd(modelFaq(model, tier, effMonthly(model, tier)))],
       }
     }
   }

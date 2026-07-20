@@ -1,9 +1,10 @@
 {
-  "verifiedDate": "20 Jul 2026",
+  "verifiedDate": "21 Jul 2026",
   "fxUsdPerAud": 0.7,
   "daysPerMonth": 30.4,
   "defaultInputShare": 0.8,
   "termDiscount": { "12": 0, "24": 0.05, "36": 0.1 },
+  "priceOverrides": { "deepseek-v4-pro": 34000 },
   "tiers": [
     {
       "id": "shared",
@@ -21,8 +22,32 @@
     { "id": "gpu4", "name": "4 GPU Dedicated", "hardware": "4× RTX PRO 6000 · 384GB", "price": 9500, "setup": 5000, "gpus": 4, "vramGb": 384, "from": false },
     { "id": "gpu5", "name": "5 GPU Dedicated", "hardware": "5× RTX PRO 6000 · 480GB", "price": 11800, "setup": 5000, "gpus": 5, "vramGb": 480, "from": false },
     { "id": "node8", "name": "Full Node Exclusive", "hardware": "8× RTX PRO 6000 · 768GB", "price": 18500, "setup": 5000, "gpus": 8, "vramGb": 768, "from": false },
-    { "id": "multi16", "name": "Multi-Node (16 GPU)", "hardware": "2 nodes · 1,536GB", "price": 38000, "setup": 20000, "gpus": 16, "vramGb": 1536, "from": true },
-    { "id": "multi24", "name": "Multi-Node (24 GPU)", "hardware": "3 nodes · 2,304GB", "price": 55000, "setup": 20000, "gpus": 24, "vramGb": 2304, "from": true, "poa": true }
+    {
+      "id": "frontier-node",
+      "name": "Frontier Sovereign Node",
+      "hardware": "8× 288GB-class accelerators · 2.3TB VRAM · single dedicated node · hosted in Australia",
+      "price": 38000,
+      "setup": 20000,
+      "gpus": 8,
+      "vramGb": 2304,
+      "from": true,
+      "minTermMonths": 24,
+      "madeToOrder": true
+    },
+    {
+      "id": "multi-node-cuda",
+      "name": "Multi-Node CUDA (NVIDIA)",
+      "hardware": "Multi-node NVIDIA CUDA fabric · for CUDA-ecosystem or very-high-concurrency workloads",
+      "price": 55000,
+      "setup": 20000,
+      "gpus": 24,
+      "vramGb": 2304,
+      "from": true,
+      "poa": true,
+      "minTermMonths": 24,
+      "madeToOrder": true,
+      "secondary": true
+    }
   ],
   "apiModels": [
     { "id": "fable-5", "name": "Claude Fable 5", "in": 10, "out": 50, "default": true },

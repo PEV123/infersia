@@ -14,6 +14,7 @@ import {
   aud,
   computeApiCost,
   computeQuote,
+  effectiveMonthly,
   fmtTokens,
   modelById,
   sharedTierBreakevenPerDay,
@@ -35,7 +36,7 @@ const CHIPS = [
   { key: 'single-gpu', label: 'Single GPU' },
   { key: 'multi-gpu', label: 'Multi-GPU' },
   { key: 'full-node', label: 'Full Node' },
-  { key: 'frontier', label: 'Frontier (Multi-Node)' },
+  { key: 'frontier', label: 'Frontier' },
   { key: 'coding', label: 'Coding' },
   { key: 'reasoning', label: 'Reasoning' },
   { key: 'multimodal', label: 'Multimodal' },
@@ -54,7 +55,7 @@ function chipMatch(m: QuoteModel, chip: ChipKey): boolean {
     case 'full-node':
       return m.tierId === 'node8'
     case 'frontier':
-      return m.tierId === 'multi16' || m.tierId === 'multi24'
+      return m.tierId === 'frontier-node' || m.tierId === 'multi-node-cuda'
     default:
       return m.caps.includes(chip)
   }
@@ -133,10 +134,21 @@ export function QuotePage() {
   const comparator = apiById(comparatorId)
   const tier = model ? tierById(model.tierId) : null
 
+  // Weights-pending frontier models have a firm node config, so they show the
+  // full estimate (as a conditional "from" figure) rather than the bare panel.
+  const showGrid = !!(model && tier && (model.quotable || model.badge === 'weights-pending'))
+
   const quote = useMemo(
     () =>
-      model && tier && model.quotable
-        ? computeQuote({ tokensPerDay, inputShare, term, tier, api: comparator })
+      model && tier && (model.quotable || model.badge === 'weights-pending')
+        ? computeQuote({
+            tokensPerDay,
+            inputShare,
+            term,
+            tier,
+            api: comparator,
+            priceMonthly: effectiveMonthly(model, tier),
+          })
         : null,
     [model, tier, tokensPerDay, inputShare, term, comparator]
   )
@@ -445,7 +457,7 @@ export function QuotePage() {
               <p className="est-empty">Choose a model above to see your estimate.</p>
             )}
 
-            {model && !model.quotable && (() => {
+            {model && !showGrid && (() => {
               const apiCost = computeApiCost({ tokensPerDay, inputShare, api: comparator })
               return (
                 <div className="est-conditional">
@@ -477,6 +489,24 @@ export function QuotePage() {
 
             {model && quote && tier && (
               <>
+                {tier.id === 'frontier-node' && (
+                  <div className="frontier-copy">
+                    <p className="tier-kicker mono">The frontier, on one sovereign node</p>
+                    <p>
+                      The largest open-weight models in the world — 1.6 to 2.8 trillion parameters — now run on a
+                      single dedicated Infersia node with 2.3TB of accelerator memory, entirely in Australia,
+                      exclusively yours. Built to order against a signed term: go-live typically 8–10 weeks from
+                      contract.
+                    </p>
+                  </div>
+                )}
+
+                {model.badge === 'weights-pending' && (
+                  <div className="est-pending-banner" role="status">
+                    Pricing conditional on official weight release and licence terms.
+                  </div>
+                )}
+
                 <div className="est-grid">
                   <div className="est-card est-inf">
                     <p className="est-kicker mono">Infersia Sovereign Dedicated</p>
@@ -484,7 +514,9 @@ export function QuotePage() {
                     <p className="est-hw mono">
                       {tier.id === 'shared'
                         ? 'Shared sovereign endpoint · fair-use pool · hosted in Australia'
-                        : `${tier.gpus}× dedicated GPUs · ${tier.vramGb}GB VRAM · hosted in Australia`}
+                        : tier.madeToOrder
+                          ? tier.hardware
+                          : `${tier.gpus}× dedicated GPUs · ${tier.vramGb}GB VRAM · hosted in Australia`}
                     </p>
                     <p className="est-big">
                       {tier.from && <span className="est-from">from </span>}
@@ -493,7 +525,14 @@ export function QuotePage() {
                     <p className="est-small">
                       {aud(quote.infersiaAnnual)} first year incl. setup{tier.poa ? ' · POA — final quote on enquiry' : tier.from ? ' · final quote on enquiry' : ''}
                     </p>
-                    <p className="est-note">Fixed price — unlimited tokens on your dedicated hardware.</p>
+                    {tier.madeToOrder ? (
+                      <p className="est-madeorder">
+                        Built to order · {tier.minTermMonths ?? 24}-month minimum · go-live 8–10 weeks from signed
+                        agreement
+                      </p>
+                    ) : (
+                      <p className="est-note">Fixed price — unlimited tokens on your dedicated hardware.</p>
+                    )}
                     <p className="est-chips">
                       <span>Onshore processing</span>
                       <span>Zero data retention</span>
@@ -672,8 +711,9 @@ export function QuotePage() {
               varies by workload — we'll help you benchmark before you commit. Not financial advice.
             </p>
             <p>
-              All model and company names are trademarks of their respective owners; Infersia is an independent
-              Australian infrastructure provider and is not affiliated with or endorsed by these organisations.
+              All model and company names are trademarks of their respective owners (including NVIDIA and AMD);
+              Infersia is an independent Australian infrastructure provider and is not affiliated with or endorsed by
+              these organisations.
             </p>
           </div>
         </div>

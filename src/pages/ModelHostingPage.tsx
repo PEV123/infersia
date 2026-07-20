@@ -1,25 +1,26 @@
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { Footer } from '../components/Footer'
 import { usePageMeta } from '../lib/usePageMeta'
-import { MODELS, modelById, tierById } from '../quote/engine'
+import { MODELS, effectiveMonthly, modelById, tierById } from '../quote/engine'
 import { modelDescription, modelFaq, modelTitle } from '../seo/shared.mjs'
 
 export function ModelHostingPage() {
   const { modelId } = useParams()
   const model = modelById(modelId ?? null)
   const tier = model ? tierById(model.tierId) : null
+  const price = model && tier ? effectiveMonthly(model, tier) : 0
 
   usePageMeta(
     model ? modelTitle(model) : 'Australian Hosted LLM | Infersia',
-    model && tier ? modelDescription(model, tier) : ''
+    model && tier ? modelDescription(model, tier, price) : ''
   )
 
   if (!model || !tier) return <Navigate to="/hosting" replace />
 
-  const faq = modelFaq(model, tier) as { q: string; a: string }[]
+  const faq = modelFaq(model, tier, price) as { q: string; a: string }[]
   const siblings = MODELS.filter((m) => m.id !== model.id).slice(0, 6)
   const priceLabel = model.quotable
-    ? `${tier.from ? 'from ' : ''}AU$${tier.price.toLocaleString('en-AU')}`
+    ? `${tier.from ? 'from ' : ''}AU$${price.toLocaleString('en-AU')}`
     : null
 
   return (
@@ -68,7 +69,10 @@ export function ModelHostingPage() {
                     <span className="est-per">/mo</span>
                   </p>
                   <p className="est-small">
-                    Fixed price, unlimited tokens, ex GST · {tier.name} — {tier.hardware}
+                    {tier.madeToOrder
+                      ? `Built to order · ${tier.minTermMonths ?? 24}-month minimum · go-live 8–10 weeks`
+                      : 'Fixed price, unlimited tokens, ex GST'}{' '}
+                    · {tier.name} — {tier.hardware}
                     {tier.poa ? ' · POA, final quote on enquiry' : tier.from ? ' · final quote on enquiry' : ''}
                   </p>
                 </>

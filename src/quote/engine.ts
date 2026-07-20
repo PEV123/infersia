@@ -11,6 +11,9 @@ export type Tier = {
   vramGb: number | null
   from: boolean
   poa?: boolean
+  minTermMonths?: number
+  madeToOrder?: boolean
+  secondary?: boolean
 }
 
 export type ApiModel = { id: string; name: string; in: number; out: number; default?: boolean }
@@ -46,9 +49,16 @@ export const DEFAULT_INPUT_SHARE = pricing.defaultInputShare
 
 export const TERM_DISCOUNT: Record<number, number> = { 12: 0, 24: 0.05, 36: 0.1 }
 
+export const PRICE_OVERRIDES = (pricing as { priceOverrides?: Record<string, number> }).priceOverrides ?? {}
+
 export const tierById = (id: string): Tier => TIERS.find((t) => t.id === id)!
 export const apiById = (id: string): ApiModel => API_MODELS.find((a) => a.id === id) ?? API_MODELS[0]
 export const modelById = (id: string | null): QuoteModel | null => MODELS.find((m) => m.id === id) ?? null
+
+// The monthly price to quote for a model: a per-model override wins over the
+// tier's list price (e.g. DeepSeek V4 Pro's lighter footprint on the frontier node).
+export const effectiveMonthly = (model: QuoteModel, tier: Tier): number =>
+  PRICE_OVERRIDES[model.id] ?? tier.price
 
 export type QuoteResult = {
   monthlyTokens: number
@@ -71,8 +81,10 @@ export function computeQuote(opts: {
   term: number
   tier: Tier
   api: ApiModel
+  priceMonthly?: number
 }): QuoteResult {
   const { tokensPerDay, inputShare, term, tier, api } = opts
+  const basePrice = opts.priceMonthly ?? tier.price
   const monthlyTokens = tokensPerDay * DAYS_PER_MONTH
   const inTokens = monthlyTokens * inputShare
   const outTokens = monthlyTokens * (1 - inputShare)
@@ -81,8 +93,10 @@ export function computeQuote(opts: {
   const apiOutMonthlyAud = ((outTokens * api.out) / 1e6) * fx
   const apiMonthlyAud = apiInMonthlyAud + apiOutMonthlyAud
   const apiAnnualAud = apiMonthlyAud * 12
-  const discount = TERM_DISCOUNT[term] ?? 0
-  const infersiaMonthly = tier.price * (1 - discount)
+  // Made-to-order "from" floors are flat (the min term is already baked in);
+  // term discounts only apply to standard dedicated tiers.
+  const discount = tier.madeToOrder ? 0 : TERM_DISCOUNT[term] ?? 0
+  const infersiaMonthly = basePrice * (1 - discount)
   const infersiaAnnual = infersiaMonthly * 12 + tier.setup
   const annualSaving = apiAnnualAud - infersiaAnnual
   const savingPct = apiAnnualAud > 0 ? annualSaving / apiAnnualAud : 0
