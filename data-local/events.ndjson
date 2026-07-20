@@ -42,3 +42,16 @@
 {"ts":"2026-07-20T11:57:10.731Z","sid":"571dacc8-fa7b-4a06-a0e3-e07dc4e97055","event":"quote_page_viewed","props":{}}
 {"ts":"2026-07-20T11:57:11.609Z","sid":"571dacc8-fa7b-4a06-a0e3-e07dc4e97055","event":"usage_changed","props":{"tokensPerDay":20000000}}
 {"ts":"2026-07-20T11:57:12.597Z","sid":"571dacc8-fa7b-4a06-a0e3-e07dc4e97055","event":"quote_viewed","props":{"model":"glm-5-2","tokensPerDay":20000000,"term":24,"vs":"fable-5","saving":48091}}
+{"ts":"2026-07-20T12:56:22.001Z","sid":"9772293b-b61c-431b-a525-4bdf4ed20544","event":"page_view","props":{"path":"/","ref":""}}
+{"ts":"2026-07-20T12:56:38.983Z","sid":"9772293b-b61c-431b-a525-4bdf4ed20544","event":"page_view","props":{"path":"/","ref":""}}
+{"ts":"2026-07-20T12:57:43.705Z","sid":"9772293b-b61c-431b-a525-4bdf4ed20544","event":"page_view","props":{"path":"/","ref":"localhost"}}
+{"ts":"2026-07-20T13:00:12.437Z","sid":"9772293b-b61c-431b-a525-4bdf4ed20544","event":"page_view","props":{"path":"/","ref":"localhost"}}
+{"ts":"2026-07-20T13:08:12.634Z","sid":"9772293b-b61c-431b-a525-4bdf4ed20544","event":"page_view","props":{"path":"/","ref":"localhost"}}
+{"ts":"2026-07-20T13:09:30.687Z","sid":"9772293b-b61c-431b-a525-4bdf4ed20544","event":"page_view","props":{"path":"/quote","ref":""}}
+{"ts":"2026-07-20T13:09:30.688Z","sid":"9772293b-b61c-431b-a525-4bdf4ed20544","event":"quote_page_viewed","props":{}}
+{"ts":"2026-07-20T13:09:31.635Z","sid":"9772293b-b61c-431b-a525-4bdf4ed20544","event":"usage_changed","props":{"tokensPerDay":5000000}}
+{"ts":"2026-07-20T13:10:13.540Z","sid":"9772293b-b61c-431b-a525-4bdf4ed20544","event":"page_view","props":{"path":"/quote","ref":"localhost"}}
+{"ts":"2026-07-20T13:10:13.541Z","sid":"9772293b-b61c-431b-a525-4bdf4ed20544","event":"quote_page_viewed","props":{}}
+{"ts":"2026-07-20T13:10:14.636Z","sid":"9772293b-b61c-431b-a525-4bdf4ed20544","event":"usage_changed","props":{"tokensPerDay":5000000}}
+{"ts":"2026-07-20T13:13:17.469Z","sid":"9772293b-b61c-431b-a525-4bdf4ed20544","event":"page_view","props":{"path":"/hosting","ref":""}}
+{"ts":"2026-07-20T13:14:18.146Z","sid":"9772293b-b61c-431b-a525-4bdf4ed20544","event":"page_view","props":{"path":"/compute","ref":""}}
