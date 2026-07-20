@@ -29,3 +29,4 @@
 {"ts":"2026-07-20T06:35:20.378Z","sid":"60dd5756-33fd-467f-9a29-3f3cde7d464c","event":"page_view","props":{"path":"/","ref":""}}
 {"ts":"2026-07-20T06:35:27.944Z","sid":"60dd5756-33fd-467f-9a29-3f3cde7d464c","event":"page_view","props":{"path":"/hosting","ref":""}}
 {"ts":"2026-07-20T06:35:48.289Z","sid":"60dd5756-33fd-467f-9a29-3f3cde7d464c","event":"page_view","props":{"path":"/hosting/deepseek-v4-pro","ref":""}}
+{"ts":"2026-07-20T10:29:43.711Z","sid":"73c45c29-f38d-4a41-ba1b-f7b805d72bc8","event":"page_view","props":{"path":"/compute","ref":""}}

@@ -7,6 +7,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   ARTICLE_META,
+  COMPUTE_FAQ,
   PILLAR_FAQ,
   SITE,
   SITE_NAME,
@@ -122,6 +123,7 @@ export function routeMeta(pathname) {
   if (staticMeta) {
     const jsonld = [ORG_LD]
     if (clean === '/hosting') jsonld.push(faqLd(PILLAR_FAQ))
+    if (clean === '/compute') jsonld.push(faqLd(COMPUTE_FAQ))
     if (clean === '/') {
       jsonld.push({
         '@context': 'https://schema.org',

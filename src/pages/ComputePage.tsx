@@ -2,7 +2,7 @@ import { useRef, useState, type FormEvent, type MouseEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { Footer } from '../components/Footer'
 import { usePageMeta } from '../lib/usePageMeta'
-import { STATIC_META } from '../seo/shared.mjs'
+import { COMPUTE_FAQ, STATIC_META } from '../seo/shared.mjs'
 
 type BadgeKind = 'available' | 'limited' | 'enquire' | 'mto'
 type UseCase = 'inference' | 'training' | 'finetuning' | 'bulk'
@@ -264,14 +264,15 @@ export function ComputePage() {
       <main id="main" className="page compute-page">
         <div className="container">
           <header className="page-rise">
-            <p className="eyebrow">Compute Platforms</p>
+            <p className="eyebrow">Sovereign GPU Cloud · Australia</p>
             <h1 className="page-title">
-              Compute, <em>built to order.</em>
+              A GPU cloud, <em>built to order.</em>
             </h1>
             <p className="page-standfirst">
-              From a single dedicated node to a full rack, Infersia provisions and operates onshore AI compute — and
-              sources the world's leading GPU platforms for larger deployments. Every configuration is available for
-              enquiry, whether you need capacity on our infrastructure or hardware for your own.{' '}
+              Infersia is a sovereign Australian GPU cloud — dedicated nodes provisioned and operated onshore, from a
+              single deployment to a full rack, plus procurement of the world's leading GPU platforms for buyers
+              building their own. Unlike GPU cloud providers that meter shared capacity by the hour, we allocate
+              hardware that's yours alone, at a fixed price, under Australian jurisdiction.{' '}
               <Link className="standfirst-link" to="/quote">Prefer numbers? Get an instant estimate →</Link>
             </p>
           </header>
@@ -365,6 +366,16 @@ export function ComputePage() {
                 </p>
               </div>
             </form>
+          </section>
+
+          <section className="faq-block" aria-label="GPU cloud questions">
+            <p className="tier-kicker mono">GPU cloud, answered</p>
+            {COMPUTE_FAQ.map((f: { q: string; a: string }) => (
+              <details key={f.q} className="faq-item">
+                <summary>{f.q}</summary>
+                <p>{f.a}</p>
+              </details>
+            ))}
           </section>
         </div>
       </main>

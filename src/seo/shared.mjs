@@ -76,9 +76,9 @@ export const STATIC_META = {
       'Sovereign AI compute on Australian soil. Dedicated GPU hosting for open-weight models — private endpoints for regulated business. Owned, operated and answerable in Australia.',
   },
   '/compute': {
-    title: 'GPU Hosting Australia — Dedicated Sovereign AI Nodes | Infersia',
+    title: 'GPU Cloud Australia — Sovereign, Dedicated GPU Hosting | Infersia',
     description:
-      'Dedicated sovereign GPU nodes operated in Australia — RTX PRO 6000, H100, H200, MI300X — plus procurement of B200, GB200 and bulk hardware. Enquiry-driven, Australian-hosted.',
+      'A sovereign Australian GPU cloud — dedicated RTX PRO 6000, H100, H200 and MI300X nodes hosted onshore, plus B200/GB200 procurement. Fixed allocations, zero offshore processing.',
   },
   '/hosting': {
     title: 'Australian Hosted LLM — Private, Dedicated & Sovereign | Infersia',
@@ -106,6 +106,25 @@ export const STATIC_META = {
     robots: 'noindex, nofollow',
   },
 }
+
+export const COMPUTE_FAQ = [
+  {
+    q: 'What is a sovereign GPU cloud?',
+    a: 'A GPU cloud whose hardware sits on Australian soil, operated by an Australian company, under Australian jurisdiction — so the computation on your data happens onshore, not just the storage. Infersia allocates dedicated GPU nodes rather than shared slices, which is what makes the sovereignty provable.',
+  },
+  {
+    q: 'How does Infersia compare to other GPU cloud providers in Australia?',
+    a: 'Most GPU cloud providers sell shared capacity by the GPU-hour. Infersia allocates dedicated nodes at a fixed monthly price — your hardware, reserved for you, with unlimited usage and no per-hour meter. Sovereignty is the default, not an add-on: every node is Australian-hosted with zero offshore processing.',
+  },
+  {
+    q: 'Can I get raw GPU access, or only managed model hosting?',
+    a: 'Both. Take a dedicated node as raw GPU capacity for your own workloads, or have us run a managed private endpoint for an open-weight model on it. Many clients start managed and take the keys later.',
+  },
+  {
+    q: 'Do you offer H100, H200 or B200 GPU capacity in Australia?',
+    a: 'H100, H200 and MI300X are available for dedicated onshore deployment, alongside our RTX PRO 6000 flagship nodes. Current-generation B200 and rack-scale GB200 systems are sourced to order for larger build-outs — including full procurement, freight and integration if you are building your own.',
+  },
+]
 
 export const ARTICLE_META = {
   'the-missing-middle': {
