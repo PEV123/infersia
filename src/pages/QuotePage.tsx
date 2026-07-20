@@ -574,7 +574,7 @@ export function QuotePage() {
                     </div>
                     {submitState === 'error' && (
                       <p className="form-error">
-                        Something went wrong — please email <a href="mailto:enquiries@infersia.au">enquiries@infersia.au</a>
+                        Something went wrong — please email <a href="mailto:enquiries@infersia.com.au">enquiries@infersia.com.au</a>
                       </p>
                     )}
                   </form>

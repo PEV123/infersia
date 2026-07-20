@@ -107,20 +107,20 @@ export function BookPage() {
                 the details you provided.
               </p>
               <p className="book-done-alt">
-                Need to change it? Email <a href="mailto:enquiries@infersia.au">enquiries@infersia.au</a>
+                Need to change it? Email <a href="mailto:enquiries@infersia.com.au">enquiries@infersia.com.au</a>
               </p>
             </div>
           ) : (
             <div className="page-rise">
               {loadError && (
                 <p className="est-empty">
-                  Couldn't load availability — email <a href="mailto:enquiries@infersia.au">enquiries@infersia.au</a>{' '}
+                  Couldn't load availability — email <a href="mailto:enquiries@infersia.com.au">enquiries@infersia.com.au</a>{' '}
                   and we'll set a time.
                 </p>
               )}
               {data && data.days.length === 0 && (
                 <p className="est-empty">
-                  No open slots right now — email <a href="mailto:enquiries@infersia.au">enquiries@infersia.au</a> and
+                  No open slots right now — email <a href="mailto:enquiries@infersia.com.au">enquiries@infersia.com.au</a> and
                   we'll find a time.
                 </p>
               )}
@@ -210,7 +210,7 @@ export function BookPage() {
                         {state === 'clash' && <p className="form-error">That slot was just taken — pick another.</p>}
                         {state === 'error' && (
                           <p className="form-error">
-                            Something went wrong — email <a href="mailto:enquiries@infersia.au">enquiries@infersia.au</a>
+                            Something went wrong — email <a href="mailto:enquiries@infersia.com.au">enquiries@infersia.com.au</a>
                           </p>
                         )}
                       </div>
