@@ -187,7 +187,24 @@ export function SettingsTab({
             <label className="mono" htmlFor="s-horizon">Bookable days ahead</label>
             <input id="s-horizon" type="number" min={1} max={90} value={draft.horizonDays} onChange={(e) => setDraft({ ...draft, horizonDays: Number(e.target.value) || 21 })} />
           </div>
+          <div className="field">
+            <label className="mono" htmlFor="s-hide">Hide open slots (%)</label>
+            <input
+              id="s-hide"
+              type="number"
+              min={0}
+              max={90}
+              step={5}
+              value={draft.hideSlotsPercent ?? 0}
+              onChange={(e) => setDraft({ ...draft, hideSlotsPercent: Number(e.target.value) || 0 })}
+            />
+          </div>
         </div>
+        <p className="settings-hint">
+          <strong>Look busier:</strong> hides this share of otherwise-open slots from the public booking page (at
+          least two always remain per day), so early-stage availability reads as in demand. You still see and can book
+          every real slot from the calendar. 0% shows everything.
+        </p>
 
         <p className="ld-k mono settings-week-h">Weekly windows — comma-separated ranges, 24h (e.g. 09:00-12:00, 13:00-17:00). Blank = unavailable.</p>
         <div className="settings-week">

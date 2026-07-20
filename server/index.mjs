@@ -60,6 +60,17 @@ const DEFAULT_SETTINGS = {
     sun: [],
   },
   blackouts: [],
+  // "look busier": deterministically hide this % of otherwise-open public
+  // slots so early-stage availability reads as in-demand. Admin always sees
+  // and can book the real availability. 0 = show everything.
+  hideSlotsPercent: 0,
+}
+
+// stable string hash so a given slot is consistently shown or hidden
+function hashStr(s) {
+  let h = 0
+  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0
+  return Math.abs(h)
 }
 
 let leads = loadDoc('leads', null)
@@ -184,8 +195,10 @@ function weekdayKeyInTz(dateStr, tz) {
 
 const RANGE_RE = /^([01]\d|2[0-3]):([0-5]\d)-([01]\d|2[0-3]):([0-5]\d)$/
 
-function computeSlots() {
+// public=true applies the "look busier" decoy; the admin path passes false.
+function computeSlots(public_ = true) {
   const { timezone, slotMinutes, bufferMinutes, leadTimeHours, horizonDays, week, blackouts } = settings
+  const hidePct = public_ ? Math.min(Math.max(Number(settings.hideSlotsPercent) || 0, 0), 90) : 0
   const now = Date.now()
   const earliest = now + leadTimeHours * 3600_000
   const blocked = bookings
@@ -216,7 +229,20 @@ function computeSlots() {
         slots.push({ start: new Date(s).toISOString(), end: new Date(e).toISOString() })
       }
     }
-    if (slots.length) days.push({ date: dateStr, slots })
+    // "look busier": drop the lowest-hashed slots, but always leave at least 2
+    let shown = slots
+    if (hidePct > 0 && slots.length > 2) {
+      const target = Math.floor((slots.length * hidePct) / 100)
+      const hideCount = Math.min(target, slots.length - 2)
+      if (hideCount > 0) {
+        const ranked = slots
+          .map((sl) => ({ sl, h: hashStr(sl.start) }))
+          .sort((a, b) => a.h - b.h)
+        const hidden = new Set(ranked.slice(0, hideCount).map((x) => x.sl.start))
+        shown = slots.filter((sl) => !hidden.has(sl.start))
+      }
+    }
+    if (shown.length) days.push({ date: dateStr, slots: shown })
   }
   return { timezone, slotMinutes, days }
 }
@@ -693,6 +719,7 @@ app.put('/api/admin/settings', requireAdmin, (req, res) => {
   next.bufferMinutes = num(s.bufferMinutes, 0, 60, next.bufferMinutes)
   next.leadTimeHours = num(s.leadTimeHours, 0, 168, next.leadTimeHours)
   next.horizonDays = num(s.horizonDays, 1, 90, next.horizonDays)
+  next.hideSlotsPercent = num(s.hideSlotsPercent, 0, 90, next.hideSlotsPercent ?? 0)
   if (s.week && typeof s.week === 'object') {
     const week = {}
     for (const day of ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']) {

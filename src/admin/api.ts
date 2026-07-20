@@ -57,6 +57,7 @@ export type CalSettings = {
   horizonDays: number
   week: Record<string, string[]>
   blackouts: string[]
+  hideSlotsPercent?: number
 }
 
 export type Summary = {
