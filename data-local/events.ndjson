@@ -37,3 +37,4 @@
 {"ts":"2026-07-20T10:42:07.921Z","sid":"73c45c29-f38d-4a41-ba1b-f7b805d72bc8","event":"quote_page_viewed","props":{}}
 {"ts":"2026-07-20T10:42:09.510Z","sid":"73c45c29-f38d-4a41-ba1b-f7b805d72bc8","event":"quote_viewed","props":{"model":"glm-5-2","tokensPerDay":20000000,"term":24,"vs":"fable-5","saving":48091}}
 {"ts":"2026-07-20T10:42:09.509Z","sid":"73c45c29-f38d-4a41-ba1b-f7b805d72bc8","event":"usage_changed","props":{"tokensPerDay":20000000}}
+{"ts":"2026-07-20T11:55:04.669Z","sid":"0eea6515-c098-4a08-9cfd-3feae724bf90","event":"page_view","props":{"path":"/book","ref":""}}

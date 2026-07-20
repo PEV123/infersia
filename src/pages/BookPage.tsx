@@ -216,8 +216,8 @@ export function BookPage() {
                         </div>
                       </div>
                       <div className="field">
-                        <label className="mono" htmlFor="b-note">What are you working on? (optional)</label>
-                        <textarea id="b-note" rows={3} value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} />
+                        <label className="mono" htmlFor="b-note">What are you working on?</label>
+                        <textarea id="b-note" rows={3} required value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} />
                       </div>
                       <div className="form-foot">
                         <button type="submit" className="btn btn-gold" disabled={state === 'sending'}>
