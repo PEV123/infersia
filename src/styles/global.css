@@ -2419,12 +2419,16 @@ main {
   -webkit-backdrop-filter: blur(14px);
 }
 
+.sov-diff .tier-title {
+  margin-bottom: 20px;
+}
+
 .sov-diff-lead {
   max-width: 76ch;
   font-size: 15.5px;
   line-height: 1.7;
   color: var(--text-2);
-  margin: -20px 0 30px;
+  margin: 0 0 30px;
 }
 
 .sovd-grid {
