@@ -55,3 +55,7 @@
 {"ts":"2026-07-20T13:10:14.636Z","sid":"9772293b-b61c-431b-a525-4bdf4ed20544","event":"usage_changed","props":{"tokensPerDay":5000000}}
 {"ts":"2026-07-20T13:13:17.469Z","sid":"9772293b-b61c-431b-a525-4bdf4ed20544","event":"page_view","props":{"path":"/hosting","ref":""}}
 {"ts":"2026-07-20T13:14:18.146Z","sid":"9772293b-b61c-431b-a525-4bdf4ed20544","event":"page_view","props":{"path":"/compute","ref":""}}
+{"ts":"2026-07-20T19:40:22.866Z","sid":"6812c3f6-380a-4ab2-93f6-81908e303fa0","event":"page_view","props":{"path":"/","ref":""}}
+{"ts":"2026-07-20T19:40:40.649Z","sid":"6812c3f6-380a-4ab2-93f6-81908e303fa0","event":"page_view","props":{"path":"/","ref":"localhost"}}
+{"ts":"2026-07-20T19:42:15.540Z","sid":"6812c3f6-380a-4ab2-93f6-81908e303fa0","event":"page_view","props":{"path":"/","ref":"localhost"}}
+{"ts":"2026-07-20T19:43:36.773Z","sid":"6812c3f6-380a-4ab2-93f6-81908e303fa0","event":"page_view","props":{"path":"/","ref":"localhost"}}
