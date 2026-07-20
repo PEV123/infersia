@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import {
   AdminAuthError,
   adminFetch,
+  type AvailBlock,
   type Booking,
   type CalSettings,
   type Lead,
@@ -27,6 +28,7 @@ export function AdminPage() {
   const [summary, setSummary] = useState<Summary | null>(null)
   const [leads, setLeads] = useState<Lead[]>([])
   const [bookings, setBookings] = useState<Booking[]>([])
+  const [blocks, setBlocks] = useState<AvailBlock[]>([])
   const [settings, setSettings] = useState<CalSettings | null>(null)
 
   useEffect(() => {
@@ -38,15 +40,17 @@ export function AdminPage() {
       setLoading(true)
       setError(null)
       try {
-        const [s, l, b, st] = await Promise.all([
+        const [s, l, b, bl, st] = await Promise.all([
           adminFetch<Summary>(k, '/api/admin/summary'),
           adminFetch<{ leads: Lead[] }>(k, '/api/admin/leads'),
           adminFetch<{ bookings: Booking[] }>(k, '/api/admin/bookings'),
+          adminFetch<{ blocks: AvailBlock[] }>(k, '/api/admin/blocks'),
           adminFetch<{ settings: CalSettings }>(k, '/api/admin/settings'),
         ])
         setSummary(s)
         setLeads(l.leads)
         setBookings(b.bookings)
+        setBlocks(bl.blocks)
         setSettings(st.settings)
         setAuthed(true)
         setKey(k)
@@ -172,12 +176,19 @@ export function AdminPage() {
         {tab === 'calendar' && (
           <CalendarTab
             bookings={bookings}
+            blocks={blocks}
             busy={busy}
             onBookingStatus={(id, status) =>
               void act(() => adminFetch(key, `/api/admin/bookings/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) }))
             }
             onAddBooking={(b) =>
               act(() => adminFetch(key, '/api/admin/bookings', { method: 'POST', body: JSON.stringify(b) }))
+            }
+            onAddBlock={(b) =>
+              act(() => adminFetch(key, '/api/admin/blocks', { method: 'POST', body: JSON.stringify(b) }))
+            }
+            onDeleteBlock={(id) =>
+              void act(() => adminFetch(key, `/api/admin/blocks/${id}`, { method: 'DELETE' }))
             }
           />
         )}

@@ -1,25 +1,33 @@
 import { useMemo, useState, type FormEvent } from 'react'
-import { fmtTime, type Booking } from './api'
+import { fmtTime, type AvailBlock, type Booking } from './api'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 const dateKey = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 
 export function CalendarTab({
   bookings,
+  blocks,
   onBookingStatus,
   onAddBooking,
+  onAddBlock,
+  onDeleteBlock,
   busy,
 }: {
   bookings: Booking[]
+  blocks: AvailBlock[]
   onBookingStatus: (id: string, status: Booking['status']) => void
   onAddBooking: (b: { start: string; durationMin: number; name: string; email: string; note: string }) => Promise<boolean>
+  onAddBlock: (b: { start: string; end: string; reason: string }) => Promise<boolean>
+  onDeleteBlock: (id: string) => void
   busy: boolean
 }) {
   const today = new Date()
   const [view, setView] = useState({ y: today.getFullYear(), m: today.getMonth() })
   const [selected, setSelected] = useState<string>(dateKey(today))
-  const [adding, setAdding] = useState(false)
+  const [mode, setMode] = useState<'none' | 'booking' | 'block'>('none')
   const [draft, setDraft] = useState({ time: '10:00', durationMin: 20, name: '', email: '', note: '' })
+  const [blockDraft, setBlockDraft] = useState({ from: '13:00', to: '15:00', reason: '' })
+  const [blockError, setBlockError] = useState<string | null>(null)
 
   const byDay = useMemo(() => {
     const map = new Map<string, Booking[]>()
@@ -29,6 +37,22 @@ export function CalendarTab({
     }
     return map
   }, [bookings])
+
+  const blocksByDay = useMemo(() => {
+    const map = new Map<string, AvailBlock[]>()
+    for (const b of blocks) {
+      // a block can span days; mark every local day it touches
+      const cur = new Date(b.start)
+      const endT = new Date(b.end).getTime()
+      while (cur.getTime() < endT) {
+        const k = dateKey(cur)
+        map.set(k, [...(map.get(k) ?? []), b])
+        cur.setDate(cur.getDate() + 1)
+        cur.setHours(0, 0, 0, 0)
+      }
+    }
+    return map
+  }, [blocks])
 
   const weeks = useMemo(() => {
     const first = new Date(view.y, view.m, 1)
@@ -49,6 +73,7 @@ export function CalendarTab({
 
   const monthLabel = new Date(view.y, view.m, 1).toLocaleDateString('en-AU', { month: 'long', year: 'numeric' })
   const dayBookings = (byDay.get(selected) ?? []).slice().sort((a, b) => (a.start < b.start ? -1 : 1))
+  const dayBlocks = (blocksByDay.get(selected) ?? []).slice().sort((a, b) => (a.start < b.start ? -1 : 1))
   const upcoming = bookings
     .filter((b) => b.status === 'confirmed' && new Date(b.end).getTime() > Date.now())
     .slice(0, 8)
@@ -65,8 +90,30 @@ export function CalendarTab({
     })
     if (ok) {
       setDraft({ ...draft, name: '', email: '', note: '' })
-      setAdding(false)
+      setMode('none')
     }
+  }
+
+  const addBlock = async (fromT: string, toT: string, reason: string) => {
+    setBlockError(null)
+    const start = new Date(`${selected}T${fromT}:00`)
+    const end = new Date(`${selected}T${toT}:00`)
+    if (end.getTime() <= start.getTime()) {
+      setBlockError('End must be after start.')
+      return
+    }
+    const ok = await onAddBlock({ start: start.toISOString(), end: end.toISOString(), reason })
+    if (ok) {
+      setBlockDraft({ from: '13:00', to: '15:00', reason: '' })
+      setMode('none')
+    } else {
+      setBlockError('Could not save the block.')
+    }
+  }
+
+  const submitBlock = (e: FormEvent) => {
+    e.preventDefault()
+    void addBlock(blockDraft.from, blockDraft.to, blockDraft.reason)
   }
 
   return (
@@ -84,8 +131,8 @@ export function CalendarTab({
           {weeks.flat().map((d) => {
             const k = dateKey(d)
             const inMonth = d.getMonth() === view.m
-            const dayList = byDay.get(k) ?? []
-            const confirmed = dayList.filter((b) => b.status === 'confirmed').length
+            const confirmed = (byDay.get(k) ?? []).filter((b) => b.status === 'confirmed').length
+            const hasBlock = (blocksByDay.get(k) ?? []).length > 0
             const isToday = k === dateKey(today)
             return (
               <button
@@ -95,17 +142,25 @@ export function CalendarTab({
                   'cal-cell' +
                   (inMonth ? '' : ' dim') +
                   (k === selected ? ' selected' : '') +
-                  (isToday ? ' today' : '')
+                  (isToday ? ' today' : '') +
+                  (hasBlock ? ' has-block' : '')
                 }
-                onClick={() => setSelected(k)}
+                onClick={() => {
+                  setSelected(k)
+                  setMode('none')
+                }}
                 aria-pressed={k === selected}
               >
                 <span className="cal-daynum">{d.getDate()}</span>
+                {hasBlock && <span className="cal-blockmark" aria-label="has availability block" />}
                 {confirmed > 0 && <span className="cal-count mono">{confirmed}</span>}
               </button>
             )
           })}
         </div>
+        <p className="cal-legend mono">
+          <span className="legend-count">1</span> calls booked · <span className="legend-block" /> availability blocked
+        </p>
       </section>
 
       <div className="cal-side">
@@ -114,12 +169,17 @@ export function CalendarTab({
             <h2 className="admin-h mono">
               {new Date(selected + 'T12:00:00').toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' })}
             </h2>
-            <button type="button" className="filter-pill add-pill" onClick={() => setAdding(!adding)}>
-              {adding ? '× Close' : '+ Add booking'}
-            </button>
+            <span className="cal-day-actions">
+              <button type="button" className="filter-pill add-pill" onClick={() => setMode(mode === 'booking' ? 'none' : 'booking')}>
+                {mode === 'booking' ? '× Close' : '+ Booking'}
+              </button>
+              <button type="button" className="filter-pill block-pill" onClick={() => { setMode(mode === 'block' ? 'none' : 'block'); setBlockError(null) }}>
+                {mode === 'block' ? '× Close' : '⊘ Block time'}
+              </button>
+            </span>
           </div>
 
-          {adding && (
+          {mode === 'booking' && (
             <form className="enquiry-form admin-add-form" onSubmit={submitAdd}>
               <div className="form-row">
                 <div className="field">
@@ -151,7 +211,58 @@ export function CalendarTab({
             </form>
           )}
 
-          {dayBookings.length === 0 && !adding && <p className="admin-empty">Nothing booked this day.</p>}
+          {mode === 'block' && (
+            <form className="enquiry-form admin-add-form" onSubmit={submitBlock}>
+              <div className="form-row">
+                <div className="field">
+                  <label className="mono" htmlFor="bl-from">Block from</label>
+                  <input id="bl-from" type="time" required value={blockDraft.from} onChange={(e) => setBlockDraft({ ...blockDraft, from: e.target.value })} />
+                </div>
+                <div className="field">
+                  <label className="mono" htmlFor="bl-to">Until</label>
+                  <input id="bl-to" type="time" required value={blockDraft.to} onChange={(e) => setBlockDraft({ ...blockDraft, to: e.target.value })} />
+                </div>
+              </div>
+              <div className="field">
+                <label className="mono" htmlFor="bl-reason">Reason (only you see this)</label>
+                <input id="bl-reason" placeholder="Site visit, travel, deep work…" value={blockDraft.reason} onChange={(e) => setBlockDraft({ ...blockDraft, reason: e.target.value })} />
+              </div>
+              <div className="form-foot">
+                <button type="submit" className="btn btn-gold btn-sm" disabled={busy}>Block this time</button>
+                <button
+                  type="button"
+                  className="btn btn-outline btn-sm"
+                  disabled={busy}
+                  onClick={() => void addBlock('00:00', '23:59', blockDraft.reason || 'Blocked all day')}
+                >
+                  Block whole day
+                </button>
+              </div>
+              {blockError && <p className="form-error">{blockError}</p>}
+            </form>
+          )}
+
+          {dayBlocks.length > 0 && (
+            <div className="cal-blocks">
+              {dayBlocks.map((b) => (
+                <div key={b.id} className="cal-block-row">
+                  <div>
+                    <p className="cal-block-time mono">
+                      ⊘ {fmtTime(b.start)}–{fmtTime(b.end)} blocked
+                    </p>
+                    {b.reason && <p className="cal-block-reason">{b.reason}</p>}
+                  </div>
+                  <button type="button" className="filter-pill" onClick={() => onDeleteBlock(b.id)} disabled={busy}>
+                    Unblock
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {dayBookings.length === 0 && dayBlocks.length === 0 && mode === 'none' && (
+            <p className="admin-empty">Nothing booked or blocked this day.</p>
+          )}
           {dayBookings.map((b) => (
             <div key={b.id} className={`cal-booking ${b.status}`}>
               <p className="cal-booking-time mono">

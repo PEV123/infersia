@@ -62,6 +62,7 @@ const DEFAULT_SETTINGS = {
 
 let leads = loadDoc('leads', null)
 let bookings = loadDoc('bookings', [])
+let blocks = loadDoc('blocks', []) // admin availability blocks: {id, ts, start, end, reason}
 let settings = { ...DEFAULT_SETTINGS, ...loadDoc('settings', {}) }
 
 // one-time migration from the original append-only lead log
@@ -173,6 +174,8 @@ function computeSlots() {
   const blocked = bookings
     .filter((b) => b.status === 'confirmed')
     .map((b) => [new Date(b.start).getTime(), new Date(b.end).getTime() + bufferMinutes * 60_000])
+  // availability blocks: exact intervals, no buffer padding
+  const availBlocks = blocks.map((b) => [new Date(b.start).getTime(), new Date(b.end).getTime()])
 
   const days = []
   for (let i = 0; i < horizonDays; i++) {
@@ -192,6 +195,7 @@ function computeSlots() {
         if (s < earliest) continue
         const clash = blocked.some(([bs, be]) => s < be && bs < e + bufferMinutes * 60_000)
         if (clash) continue
+        if (availBlocks.some(([bs, be]) => s < be && bs < e)) continue
         slots.push({ start: new Date(s).toISOString(), end: new Date(e).toISOString() })
       }
     }
@@ -444,6 +448,44 @@ app.patch('/api/admin/bookings/:id', requireAdmin, (req, res) => {
   if (['confirmed', 'cancelled', 'completed'].includes(status)) booking.status = status
   saveDoc('bookings', bookings)
   res.json({ ok: true, booking })
+})
+
+// ---------- admin: availability blocks ----------
+
+app.get('/api/admin/blocks', requireAdmin, (_req, res) => {
+  const sorted = blocks.slice().sort((a, b) => (a.start < b.start ? -1 : 1))
+  res.json({ ok: true, blocks: sorted })
+})
+
+app.post('/api/admin/blocks', requireAdmin, (req, res) => {
+  const { start, end, reason } = req.body || {}
+  const s = new Date(String(start))
+  const e = new Date(String(end))
+  if (Number.isNaN(s.getTime()) || Number.isNaN(e.getTime())) {
+    return res.status(400).json({ ok: false, error: 'valid start and end required' })
+  }
+  if (e.getTime() <= s.getTime()) return res.status(400).json({ ok: false, error: 'end must be after start' })
+  if (e.getTime() - s.getTime() > 7 * 86_400_000) {
+    return res.status(400).json({ ok: false, error: 'block too long — 7 days max per block' })
+  }
+  const block = {
+    id: crypto.randomUUID(),
+    ts: new Date().toISOString(),
+    start: s.toISOString(),
+    end: e.toISOString(),
+    reason: clip(String(reason || ''), 200),
+  }
+  blocks.push(block)
+  saveDoc('blocks', blocks)
+  res.json({ ok: true, block })
+})
+
+app.delete('/api/admin/blocks/:id', requireAdmin, (req, res) => {
+  const before = blocks.length
+  blocks = blocks.filter((b) => b.id !== req.params.id)
+  if (blocks.length === before) return res.status(404).json({ ok: false })
+  saveDoc('blocks', blocks)
+  res.json({ ok: true })
 })
 
 // ---------- admin: calendar settings ----------

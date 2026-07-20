@@ -30,6 +30,14 @@ export type Lead = {
   bookings?: Booking[]
 }
 
+export type AvailBlock = {
+  id: string
+  ts: string
+  start: string
+  end: string
+  reason: string
+}
+
 export type CalSettings = {
   timezone: string
   slotMinutes: number
