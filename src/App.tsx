@@ -4,6 +4,7 @@ import { Nav } from './components/Nav'
 import { HomePage } from './pages/HomePage'
 import { AdminPage } from './pages/AdminPage'
 import { ArticlePage } from './pages/ArticlePage'
+import { BookPage } from './pages/BookPage'
 import { ComputePage } from './pages/ComputePage'
 import { NewsIndex } from './pages/NewsIndex'
 import { QuotePage } from './pages/QuotePage'
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/compute" element={<ComputePage />} />
         <Route path="/quote" element={<QuotePage />} />
+        <Route path="/book" element={<BookPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/news" element={<NewsIndex />} />
         <Route path="/news/:slug" element={<ArticlePage />} />

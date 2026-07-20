@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Footer } from '../components/Footer'
 import { track } from '../lib/track'
 import {
@@ -217,15 +217,16 @@ export function QuotePage() {
       })
       if (!res.ok) throw new Error(String(res.status))
       setSubmitState('done')
+      try {
+        sessionStorage.setItem('infersia_lead_prefill', JSON.stringify(lead))
+      } catch {
+        /* prefill is a nicety only */
+      }
       track('quote_submitted', { model: model.id, tokensPerDay, term, vs: comparatorId })
     } catch {
       setSubmitState('error')
     }
   }
-
-  const callHref = `mailto:enquiries@infersia.au?subject=${encodeURIComponent(
-    `20-minute call — ${model ? model.name : 'sovereign hosting'}`
-  )}`
 
   // count-up values (safe fallbacks when no quote)
   const cuInfMonthly = useCountUp(quote ? quote.infersiaMonthly : 0)
@@ -247,6 +248,12 @@ export function QuotePage() {
               costs — next to what the same volume costs on an offshore frontier API. The models below deliver 90–95%
               of frontier capability, on hardware you control, under Australian law.
             </p>
+            <ul className="sov-strip" aria-label="Sovereignty guarantees">
+              <li>Hosted on Australian soil</li>
+              <li>Australian jurisdiction, end to end</li>
+              <li>Zero offshore processing</li>
+              <li>Private by architecture</li>
+            </ul>
           </header>
 
           {/* ---------- STEP 1 ---------- */}
@@ -522,25 +529,12 @@ export function QuotePage() {
 
             {model && (
               <>
-                <div className="benefits-grid">
-                  {[
-                    'Processed in Australia — provably',
-                    "Your data never trains anyone's model",
-                    'Fixed monthly cost — no bill shock',
-                    'No rate limits or capacity roulette',
-                    'Your model, your control — fine-tune & customise',
-                    'A human in Australia who answers the phone',
-                  ].map((b) => (
-                    <div key={b} className="benefit-tile">{b}</div>
-                  ))}
-                </div>
-
                 {!formOpen && submitState !== 'done' && (
                   <div className="lock-row">
                     <button type="button" className="btn btn-gold btn-lg" onClick={() => setFormOpen(true)}>
                       Lock this quote — Enquire
                     </button>
-                    <a className="lock-alt" href={callHref}>Or book a 20-minute call</a>
+                    <Link className="lock-alt" to="/book">Or book a 20-minute call</Link>
                   </div>
                 )}
 
@@ -576,7 +570,7 @@ export function QuotePage() {
                       <button type="submit" className="btn btn-gold" disabled={submitState === 'sending'}>
                         {submitState === 'sending' ? 'Sending…' : 'Lock this quote'}
                       </button>
-                      <a className="lock-alt" href={callHref}>Or book a 20-minute call</a>
+                      <Link className="lock-alt" to="/book">Or book a 20-minute call</Link>
                     </div>
                     {submitState === 'error' && (
                       <p className="form-error">
@@ -590,10 +584,62 @@ export function QuotePage() {
                   <div className="lead-done" role="status">
                     <p className="lead-done-title">Quote locked.</p>
                     <p>We'll come back to you within one business day with a firm sovereign quote for {model.name}.</p>
+                    <p className="lead-done-book">
+                      <Link className="btn btn-outline btn-sm" to="/book">Book your intro call now →</Link>
+                    </p>
                   </div>
                 )}
               </>
             )}
+          </section>
+
+          <section className="sov-diff" aria-labelledby="sov-diff-h">
+            <p className="tier-kicker mono">The sovereign difference</p>
+            <h2 id="sov-diff-h" className="tier-title">
+              The saving is the bonus. <em>Sovereignty is the point.</em>
+            </h2>
+            <p className="sov-diff-lead">
+              Frontier APIs process your prompts offshore, under foreign law, on shared infrastructure you can't
+              inspect. For obligations under the Privacy Act, APRA's outsourcing and security standards, legal
+              professional privilege, and health-record residency, that is disqualifying — at any price. Dedicated
+              sovereign hosting removes the question entirely:
+            </p>
+            <div className="sovd-grid">
+              {[
+                {
+                  t: 'Processed in Australia — provably',
+                  b: 'Every token is computed on hardware on Australian soil, under Australian jurisdiction. Auditable, not asserted.',
+                },
+                {
+                  t: "Your data never trains anyone's model",
+                  b: 'Dedicated weights on dedicated GPUs. Nothing you send is retained, shared, or learned from.',
+                },
+                {
+                  t: 'Privacy & security by architecture',
+                  b: "Your data never crosses a border — encrypted in transit and at rest, zero retention, no third parties in the path. Sovereignty isn't a policy here; it's the wiring.",
+                },
+                {
+                  t: 'Your model, your control',
+                  b: 'Pin versions, fine-tune, customise. No silent model swaps, no deprecation emails, no surprises.',
+                },
+                {
+                  t: 'Fixed cost, no rate limits',
+                  b: 'One monthly number, unlimited tokens on your hardware. No bill shock, no queues, no capacity roulette.',
+                },
+                {
+                  t: 'A human in Australia who answers the phone',
+                  b: 'Engineering and support onshore, in your timezone — accountable under the same law you are.',
+                },
+              ].map((x) => (
+                <div key={x.t} className="sovd-tile">
+                  <h3>{x.t}</h3>
+                  <p>{x.b}</p>
+                </div>
+              ))}
+            </div>
+            <div className="sov-diff-cta">
+              <Link className="btn btn-gold" to="/book">Book a 20-minute sovereignty call</Link>
+            </div>
           </section>
 
           <div className="quote-disclaimers">

@@ -28,10 +28,9 @@ Live at **https://infersia.onrender.com** — Render **web service** `infersia`
 (`srv-d9elv55aeets73bfcri0`, Mediapedia workspace, Singapore region, starter plan),
 auto-deploying from `main` on [PEV123/infersia](https://github.com/PEV123/infersia).
 Build `npm ci && npm run build`, start `npm start` (Express serves `dist/` + the API).
-A 1GB persistent disk is mounted at `/data` for analytics/lead storage.
-Env: `NODE_VERSION=22`, `DATA_DIR=/data`, `ADMIN_PASSWORD` (rotate in the Render
-dashboard), optional `GHL_WEBHOOK_URL` (POSTs each lead to GoHighLevel when set).
-To ship: commit to `main` and push.
+A 1GB persistent disk is mounted at `/data` for analytics, leads, bookings and
+calendar settings. Env: `NODE_VERSION=22`, `DATA_DIR=/data`, `ADMIN_PASSWORD`
+(rotate in the Render dashboard). To ship: commit to `main` and push.
 
 ## Quote builder, analytics & admin
 
@@ -50,11 +49,21 @@ To ship: commit to `main` and push.
   `quote_submitted`) to `POST /api/track`. No cookies, no PII; a per-tab session
   id groups events. Stored as NDJSON on the disk.
 - **Leads** — "Lock this quote" posts to `POST /api/quote-lead` with the full
-  quote context (model, tier, usage, term, comparator, figures).
-- **`/admin`** — password-gated dashboard (`ADMIN_PASSWORD` env; sent as an
-  `x-admin-key` header): totals, models picked, comparators, usage levels, terms,
-  the leads table, and a recent-event feed. Not linked anywhere; `robots.txt`
-  disallows it.
+  quote context (model, tier, usage, term, comparator, figures). Leads dedupe by
+  email and accumulate context.
+- **`/book`** — public call booking. Slots are generated server-side from the
+  availability settings (timezone-correct, minus existing bookings, with buffer,
+  minimum notice and horizon), rendered in the visitor's timezone. A booking
+  creates/links a lead automatically and rejects just-taken slots (409).
+- **`/admin`** — password-gated CRM (`ADMIN_PASSWORD` env; `x-admin-key` header),
+  four tabs: **Dashboard** (usage intelligence: models picked, comparators, usage
+  levels, terms, event feed) · **Leads** (pipeline new → contacted → qualified →
+  quoted → won/lost, notes timeline, quote context, linked calls, manual add) ·
+  **Calendar** (month grid, per-day bookings with complete/cancel, manual
+  bookings, next-up rail) · **Availability** (timezone, call length, buffer,
+  minimum notice, horizon, weekly windows, blackout dates). Not linked anywhere;
+  `robots.txt` disallows it. Data lives in plain JSON on the disk — no external
+  CRM required.
 
 Local dev: `npm run dev` (Vite, port 5180) + `npm run dev:api` (Express on 8790;
 Vite proxies `/api`). Set `ADMIN_PASSWORD` locally to use the admin page.
