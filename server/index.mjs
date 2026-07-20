@@ -738,6 +738,8 @@ app.use((req, res, next) => {
   if (!template) return res.status(503).send('build missing')
   const meta = routeMeta(req.path)
   if (meta.robots && meta.robots.includes('noindex')) res.set('X-Robots-Tag', 'noindex')
+  // hashed assets cache long; the shell must always revalidate so deploys show up
+  res.set('Cache-Control', 'no-cache')
   const html = template
     .replace(/<title>.*?<\/title>/, '')
     .replace('<!--%SEO%-->', renderHead(meta))
