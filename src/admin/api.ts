@@ -22,6 +22,7 @@ export type GoogleStatus = {
   configured: boolean
   connected: boolean
   email: string | null
+  emailNotifications: boolean
   icsUrl: string | null
 }
 

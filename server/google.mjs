@@ -10,7 +10,9 @@ const AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 const TOKEN_URL = 'https://oauth2.googleapis.com/token'
 const REVOKE_URL = 'https://oauth2.googleapis.com/revoke'
 const CAL_API = 'https://www.googleapis.com/calendar/v3'
-const SCOPES = 'https://www.googleapis.com/auth/calendar.events openid email'
+const GMAIL_API = 'https://gmail.googleapis.com/gmail/v1'
+const GMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.send'
+const SCOPES = `https://www.googleapis.com/auth/calendar.events ${GMAIL_SCOPE} openid email`
 
 export function createGoogle({ loadDoc, saveDoc, site }) {
   const clientId = process.env.GOOGLE_CLIENT_ID || ''
@@ -63,7 +65,12 @@ export function createGoogle({ loadDoc, saveDoc, site }) {
     } catch {
       /* email is cosmetic */
     }
-    cfg = { refreshToken: json.refresh_token, email, connectedAt: new Date().toISOString() }
+    cfg = {
+      refreshToken: json.refresh_token,
+      email,
+      scopes: String(json.scope || ''),
+      connectedAt: new Date().toISOString(),
+    }
     saveDoc('google', cfg)
     accessToken = json.access_token || null
     accessExpiry = Date.now() + (json.expires_in || 3000) * 1000
@@ -154,11 +161,42 @@ export function createGoogle({ loadDoc, saveDoc, site }) {
     saveDoc('google', null)
   }
 
+  const canEmail = () => connected() && String(cfg.scopes || '').includes(GMAIL_SCOPE)
+
+  async function sendMail({ to, subject, text }) {
+    if (!configured() || !canEmail()) return false
+    try {
+      const t = await token()
+      const raw = [
+        `To: ${to}`,
+        `Subject: =?utf-8?B?${Buffer.from(subject).toString('base64')}?=`,
+        'Content-Type: text/plain; charset=utf-8',
+        '',
+        text,
+      ].join('\r\n')
+      const res = await fetch(`${GMAIL_API}/users/me/messages/send`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${t}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ raw: Buffer.from(raw).toString('base64url') }),
+        signal: AbortSignal.timeout(8000),
+      })
+      if (!res.ok) {
+        console.error('gmail send failed:', res.status, (await res.text()).slice(0, 200))
+        return false
+      }
+      return true
+    } catch (err) {
+      console.error('gmail send error:', err.message)
+      return false
+    }
+  }
+
   const status = () => ({
     configured: configured(),
     connected: connected(),
     email: cfg?.email ?? null,
+    emailNotifications: canEmail(),
   })
 
-  return { authUrl, handleCallback, createEvent, deleteEvent, disconnect, status, configured, connected }
+  return { authUrl, handleCallback, createEvent, deleteEvent, disconnect, sendMail, status, configured, connected }
 }

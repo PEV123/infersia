@@ -68,7 +68,18 @@ let blocks = loadDoc('blocks', []) // admin availability blocks: {id, ts, start,
 let settings = { ...DEFAULT_SETTINGS, ...loadDoc('settings', {}) }
 
 const CAL_FEED_KEY = process.env.CALENDAR_FEED_KEY || ''
+const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || 'sales@infersia.com.au'
 const google = createGoogle({ loadDoc, saveDoc, site: 'https://www.infersia.com.au' })
+
+const fmtWhen = (iso) =>
+  new Intl.DateTimeFormat('en-AU', {
+    timeZone: settings.timezone,
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(new Date(iso))
 
 // one-time migration from the original append-only lead log
 if (leads === null) {
@@ -300,6 +311,24 @@ app.post('/api/quote-lead', (req, res) => {
     event: 'quote_submitted',
     props: { model: clip(String(lead.context.model || '')), source: 'lead' },
   })
+  const ctx = lead.context || {}
+  void google.sendMail({
+    to: NOTIFY_EMAIL,
+    subject: `New quote lead — ${lead.name}${lead.org ? ` (${lead.org})` : ''}${ctx.modelName ? ` — ${ctx.modelName}` : ''}`,
+    text: [
+      `${lead.name}${lead.org ? ` — ${lead.org}` : ''}`,
+      `${lead.email}${lead.phone ? ` · ${lead.phone}` : ''}`,
+      '',
+      ctx.modelName ? `Model: ${ctx.modelName}${ctx.tier ? ` (${ctx.tier})` : ''}` : null,
+      typeof ctx.tokensPerDay === 'number' ? `Usage: ${(ctx.tokensPerDay / 1e6).toLocaleString()}M tokens/day · ${ctx.term ?? '?'} months` : null,
+      ctx.comparator ? `Compared against: ${ctx.comparator}` : null,
+      typeof ctx.annualSaving === 'number' ? `Saving shown: AU$${Math.round(ctx.annualSaving).toLocaleString()}/yr` : null,
+      '',
+      'Leads: https://www.infersia.com.au/admin',
+    ]
+      .filter((l) => l !== null)
+      .join('\n'),
+  })
   res.json({ ok: true, leadId: lead.id })
 })
 
@@ -344,6 +373,23 @@ app.post('/api/booking', async (req, res) => {
     booking.meetLink = gcal.meetLink
     saveDoc('bookings', bookings)
   }
+
+  void google.sendMail({
+    to: NOTIFY_EMAIL,
+    subject: `New call booked — ${booking.name}${booking.org ? ` (${booking.org})` : ''} — ${fmtWhen(booking.start)}`,
+    text: [
+      `${booking.name}${booking.org ? ` — ${booking.org}` : ''}`,
+      `${booking.email}${booking.phone ? ` · ${booking.phone}` : ''}`,
+      '',
+      `When: ${fmtWhen(booking.start)} (${slotMinutes} min, ${settings.timezone})`,
+      booking.meetLink ? `Meet: ${booking.meetLink}` : null,
+      booking.note ? `Note: ${booking.note}` : null,
+      '',
+      'Calendar: https://www.infersia.com.au/admin',
+    ]
+      .filter((l) => l !== null)
+      .join('\n'),
+  })
 
   res.json({
     ok: true,

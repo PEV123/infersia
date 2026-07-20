@@ -3452,6 +3452,10 @@ main {
   color: var(--gold-bright);
 }
 
+.gsync-warn {
+  color: #e0a458;
+}
+
 .book-done-meet {
   margin-top: 14px;
   font-size: 14px;

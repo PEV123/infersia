@@ -81,12 +81,24 @@ function GoogleSyncPanel({ adminKey }: { adminKey: string }) {
             </p>
           )}
           {status.connected && (
-            <p className="gsync-connected">
-              <span className="settings-saved mono">Connected{status.email ? ` as ${status.email}` : ''} ✓</span>
-              <button type="button" className="filter-pill" onClick={() => void disconnect()} disabled={working}>
-                Disconnect
-              </button>
-            </p>
+            <>
+              <p className="gsync-connected">
+                <span className="settings-saved mono">Connected{status.email ? ` as ${status.email}` : ''} ✓</span>
+                <button type="button" className="filter-pill" onClick={() => void disconnect()} disabled={working}>
+                  Disconnect
+                </button>
+              </p>
+              {status.emailNotifications ? (
+                <p className="settings-hint">
+                  Email notifications are on — new bookings and quote leads arrive in your Gmail inbox.
+                </p>
+              ) : (
+                <p className="settings-hint gsync-warn">
+                  Email notifications need one extra permission: click Disconnect, then Connect again and approve the
+                  "Send email on your behalf" scope. Calendar sync keeps working either way.
+                </p>
+              )}
+            </>
           )}
         </div>
         {status.icsUrl && (
