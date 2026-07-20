@@ -17,8 +17,12 @@
       "Fast, efficient — beats last-gen 27B models at half the memory",
       "Ideal for classification, drafting, high-volume light tasks"
     ],
-    "tags": ["Fast tasks", "Cost-efficient"],
-    "caps": []
+    "tags": [
+      "Fast tasks",
+      "Cost-efficient"
+    ],
+    "caps": [],
+    "logo": "/logos/google-deepmind.png"
   },
   {
     "id": "qwen36-27b",
@@ -39,8 +43,12 @@
       "Truly permissive Apache 2.0 licence",
       "Long context for its size"
     ],
-    "tags": ["All-round", "Licence freedom"],
-    "caps": []
+    "tags": [
+      "All-round",
+      "Licence freedom"
+    ],
+    "caps": [],
+    "logo": "/logos/qwen.png"
   },
   {
     "id": "llama-33-70b",
@@ -60,8 +68,13 @@
       "The enterprise workhorse — biggest ecosystem, most tooling",
       "Battle-tested in production worldwide"
     ],
-    "tags": ["Enterprise", "RAG", "General"],
-    "caps": []
+    "tags": [
+      "Enterprise",
+      "RAG",
+      "General"
+    ],
+    "caps": [],
+    "logo": "/logos/meta.png"
   },
   {
     "id": "gpt-oss-120b",
@@ -82,8 +95,14 @@
       "Runs on a single GPU",
       "Familiar behaviour for teams coming off GPT APIs"
     ],
-    "tags": ["Reasoning", "GPT-familiar"],
-    "caps": ["reasoning"]
+    "tags": [
+      "Reasoning",
+      "GPT-familiar"
+    ],
+    "caps": [
+      "reasoning"
+    ],
+    "logo": "/logos/openai.png"
   },
   {
     "id": "qwen3-235b",
@@ -103,8 +122,12 @@
       "Frontier-adjacent quality at the lowest cost in its class",
       "Exceptional multilingual coverage (119 languages)"
     ],
-    "tags": ["Multilingual", "Value frontier"],
-    "caps": []
+    "tags": [
+      "Multilingual",
+      "Value frontier"
+    ],
+    "caps": [],
+    "logo": "/logos/qwen.png"
   },
   {
     "id": "llama-4-maverick",
@@ -124,8 +147,14 @@
       "The Western multimodal choice — text + vision",
       "Strong general capability, Meta ecosystem"
     ],
-    "tags": ["Multimodal", "Western-stack"],
-    "caps": ["multimodal"]
+    "tags": [
+      "Multimodal",
+      "Western-stack"
+    ],
+    "caps": [
+      "multimodal"
+    ],
+    "logo": "/logos/meta.png"
   },
   {
     "id": "qwen3-coder",
@@ -145,8 +174,14 @@
       "Top-tier open coding model",
       "Best efficiency per active parameter (Coder-Next)"
     ],
-    "tags": ["Coding", "Agents"],
-    "caps": ["coding"]
+    "tags": [
+      "Coding",
+      "Agents"
+    ],
+    "caps": [
+      "coding"
+    ],
+    "logo": "/logos/qwen.png"
   },
   {
     "id": "minimax-m3",
@@ -167,8 +202,15 @@
       "First open model with frontier coding + 1M context + native multimodality (June 2026)",
       "Tops open SWE-Bench Pro"
     ],
-    "tags": ["1M context", "Multimodal"],
-    "caps": ["coding", "multimodal"]
+    "tags": [
+      "1M context",
+      "Multimodal"
+    ],
+    "caps": [
+      "coding",
+      "multimodal"
+    ],
+    "logo": "/logos/minimax.png"
   },
   {
     "id": "glm-5-2",
@@ -189,8 +231,16 @@
       "91.2% GPQA Diamond; leads open SWE-bench Pro",
       "Permissive MIT licence"
     ],
-    "tags": ["Best overall", "Coding", "Reasoning"],
-    "caps": ["coding", "reasoning"]
+    "tags": [
+      "Best overall",
+      "Coding",
+      "Reasoning"
+    ],
+    "caps": [
+      "coding",
+      "reasoning"
+    ],
+    "logo": "/logos/zai.png"
   },
   {
     "id": "kimi-k26",
@@ -211,8 +261,16 @@
       "Longest autonomous coding runs",
       "Text + image + video input"
     ],
-    "tags": ["Agents", "Long runs", "Multimodal"],
-    "caps": ["coding", "multimodal"]
+    "tags": [
+      "Agents",
+      "Long runs",
+      "Multimodal"
+    ],
+    "caps": [
+      "coding",
+      "multimodal"
+    ],
+    "logo": "/logos/moonshot.png"
   },
   {
     "id": "deepseek-v4-pro",
@@ -233,8 +291,14 @@
       "Largest shipped open-weight model",
       "Full 1M context"
     ],
-    "tags": ["Frontier reasoning", "Research"],
-    "caps": ["reasoning"]
+    "tags": [
+      "Frontier reasoning",
+      "Research"
+    ],
+    "caps": [
+      "reasoning"
+    ],
+    "logo": "/logos/deepseek.png"
   },
   {
     "id": "kimi-k3",
@@ -255,8 +319,14 @@
       "Frontier-class — already edges past Claude Opus 4.8 on independent rankings",
       "The largest open model ever, landing this month"
     ],
-    "tags": ["Frontier", "Sovereign flagship"],
-    "caps": ["reasoning"]
+    "tags": [
+      "Frontier",
+      "Sovereign flagship"
+    ],
+    "caps": [
+      "reasoning"
+    ],
+    "logo": "/logos/moonshot.png"
   },
   {
     "id": "qwen-38",
@@ -277,7 +347,11 @@
       "Teased as second only to Claude Fable 5",
       "Open-weight release promised (date & licence TBC)"
     ],
-    "tags": ["Frontier", "Watch-list"],
-    "caps": []
+    "tags": [
+      "Frontier",
+      "Watch-list"
+    ],
+    "caps": [],
+    "logo": "/logos/qwen.png"
   }
 ]

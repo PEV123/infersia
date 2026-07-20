@@ -37,7 +37,10 @@ export function HostingIndex() {
               return (
                 <Link key={m.id} className={'hcard' + (m.badge === 'weights-pending' ? ' pending' : '')} to={`/hosting/${m.id}`}>
                   <span className="mcard-top">
-                    <span className="dev-chip mono">{m.developer}</span>
+                    <span className="dev-chip mono">
+                      {m.logo && <img src={m.logo} alt="" width={15} height={15} loading="lazy" />}
+                      {m.developer}
+                    </span>
                     <span className={`badge badge-${m.badge === 'weights-pending' ? 'pending' : m.badge}`}>
                       <i className="badge-dot" aria-hidden="true" />
                       {BADGE_LABEL[m.badge]}
@@ -95,6 +98,14 @@ export function HostingIndex() {
               </details>
             ))}
           </section>
+
+          <div className="quote-disclaimers">
+            <p>
+              All model and company names and logos are trademarks of their respective owners; Infersia is an
+              independent Australian infrastructure provider and is not affiliated with or endorsed by these
+              organisations.
+            </p>
+          </div>
         </div>
       </main>
       <Footer />

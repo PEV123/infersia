@@ -19,6 +19,7 @@ export type QuoteModel = {
   id: string
   name: string
   developer: string
+  logo?: string
   paramsTotal: string
   paramsActive: string
   licence: string

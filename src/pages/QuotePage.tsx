@@ -293,7 +293,10 @@ export function QuotePage() {
                     onClick={() => selectModel(m)}
                   >
                     <span className="mcard-top">
-                      <span className="dev-chip mono">{m.developer}</span>
+                      <span className="dev-chip mono">
+                        {m.logo && <img src={m.logo} alt="" width={15} height={15} loading="lazy" />}
+                        {m.developer}
+                      </span>
                       <span className={`badge badge-${m.badge === 'weights-pending' ? 'pending' : m.badge}`}>
                         <i className="badge-dot" aria-hidden="true" />
                         {BADGE_LABEL[m.badge]}

@@ -1752,16 +1752,38 @@ main {
 }
 
 .dev-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-2);
-  padding: 5px 10px;
+  padding: 5px 10px 5px 6px;
   border: 1px solid var(--line-strong);
   border-radius: 999px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.dev-chip img {
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  flex: none;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1px;
+}
+
+.model-logo {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  vertical-align: -6px;
+  margin-right: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 2px;
 }
 
 .mcard-name {

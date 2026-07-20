@@ -51,7 +51,10 @@ export function ModelHostingPage() {
           <div className="model-cols page-rise">
             <section className="est-card est-inf model-main">
               <p className="est-kicker mono">The deployment</p>
-              <p className="est-model">{model.name}</p>
+              <p className="est-model">
+                {model.logo && <img className="model-logo" src={model.logo} alt={`${model.developer} logo`} width={30} height={30} />}
+                {model.name}
+              </p>
               <p className="est-hw mono">
                 {model.paramsTotal}
                 {model.paramsActive !== 'dense' ? ` (${model.paramsActive})` : ''} · {model.licence} · {model.context}{' '}
@@ -123,6 +126,14 @@ export function ModelHostingPage() {
               </details>
             ))}
           </section>
+
+          <div className="quote-disclaimers">
+            <p>
+              {model.name} and the {model.developer} name and logo are trademarks of their respective owners;
+              Infersia is an independent Australian infrastructure provider and is not affiliated with or endorsed
+              by {model.developer}.
+            </p>
+          </div>
         </div>
       </main>
       <Footer />
