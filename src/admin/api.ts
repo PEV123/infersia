@@ -13,6 +13,16 @@ export type Booking = {
   end: string
   durationMin: number
   status: 'confirmed' | 'cancelled' | 'completed'
+  gcalEventId?: string | null
+  meetLink?: string
+}
+
+export type GoogleStatus = {
+  ok: boolean
+  configured: boolean
+  connected: boolean
+  email: string | null
+  icsUrl: string | null
 }
 
 export type Lead = {

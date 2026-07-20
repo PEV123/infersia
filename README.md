@@ -68,6 +68,32 @@ calendar settings. Env: `NODE_VERSION=22`, `DATA_DIR=/data`, `ADMIN_PASSWORD`
 Local dev: `npm run dev` (Vite, port 5180) + `npm run dev:api` (Express on 8790;
 Vite proxies `/api`). Set `ADMIN_PASSWORD` locally to use the admin page.
 
+## Calendar sync (Google)
+
+Two layers, both optional:
+
+1. **ICS feed (zero setup)** — `/api/calendar.ics?key=$CALENDAR_FEED_KEY` serves all
+   bookings + availability blocks. The exact URL is shown in Admin → Availability →
+   Calendar sync; add it in Google Calendar via *Other calendars → + → From URL*.
+   Google refreshes subscribed feeds every few hours.
+2. **Google Calendar API (instant, with Meet links + customer invites)** — one-time
+   setup (~8 min):
+   1. console.cloud.google.com → create/select a project → *APIs & Services →
+      Library* → enable **Google Calendar API**.
+   2. *OAuth consent screen*: External, app name "Infersia Admin", add your Google
+      account as a test user (Testing publishing status is fine for personal use).
+   3. *Credentials → Create credentials → OAuth client ID → Web application*;
+      authorised redirect URI exactly: `https://www.infersia.com.au/api/google/callback`
+   4. Put the client ID/secret in Render env as `GOOGLE_CLIENT_ID` and
+      `GOOGLE_CLIENT_SECRET` (service redeploys automatically).
+   5. Admin → Availability → Calendar sync → **Connect Google Calendar** → approve.
+
+   Once connected: every confirmed booking creates a Calendar event with a Google
+   Meet link, the customer receives a calendar invite by email (`sendUpdates=all`),
+   the Meet link shows on the public confirmation screen and in the admin calendar,
+   and cancelling a booking removes the event. The refresh token lives in
+   `google.json` on the persistent disk; Disconnect revokes it.
+
 ## SEO
 
 - **Server-injected meta**: Express replaces the `<!--%SEO%-->` marker in the built

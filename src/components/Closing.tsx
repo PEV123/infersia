@@ -17,12 +17,12 @@ export function Closing() {
           Capacity is allocated, not listed. Tell us what you're building.
         </p>
         <p data-reveal>
-          <a className="btn btn-gold btn-lg" href="mailto:enquiries@infersia.com.au?subject=Access%20enquiry">
+          <a className="btn btn-gold btn-lg" href="mailto:sales@infersia.com.au?subject=Access%20enquiry">
             Enquire
           </a>
         </p>
         <p className="closing-mail mono" data-reveal>
-          <a href="mailto:enquiries@infersia.com.au">enquiries@infersia.com.au</a>
+          <a href="mailto:sales@infersia.com.au">sales@infersia.com.au</a>
         </p>
       </div>
       <Footer />

@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from 'react'
-import type { CalSettings } from './api'
+import { useEffect, useState, type FormEvent } from 'react'
+import { adminFetch, type CalSettings, type GoogleStatus } from './api'
 
 const TIMEZONES = [
   'Australia/Sydney',
@@ -22,14 +22,98 @@ const DAYS: { key: string; label: string }[] = [
   { key: 'sun', label: 'Sunday' },
 ]
 
+function GoogleSyncPanel({ adminKey }: { adminKey: string }) {
+  const [status, setStatus] = useState<GoogleStatus | null>(null)
+  const [working, setWorking] = useState(false)
+
+  const load = () =>
+    adminFetch<GoogleStatus>(adminKey, '/api/admin/google/status')
+      .then(setStatus)
+      .catch(() => setStatus(null))
+
+  useEffect(() => {
+    void load()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adminKey])
+
+  const connect = async () => {
+    setWorking(true)
+    try {
+      const r = await adminFetch<{ url: string }>(adminKey, '/api/admin/google/auth-url')
+      window.location.href = r.url
+    } catch {
+      setWorking(false)
+    }
+  }
+
+  const disconnect = async () => {
+    setWorking(true)
+    try {
+      await adminFetch(adminKey, '/api/admin/google/disconnect', { method: 'POST' })
+      await load()
+    } finally {
+      setWorking(false)
+    }
+  }
+
+  if (!status) return null
+  return (
+    <section className="admin-panel">
+      <h2 className="admin-h mono">Calendar sync</h2>
+      <div className="gsync">
+        <div className="gsync-row">
+          <p className="ld-k mono">Google Calendar</p>
+          {!status.configured && (
+            <p className="settings-hint">
+              Not configured yet — set <code>GOOGLE_CLIENT_ID</code> and <code>GOOGLE_CLIENT_SECRET</code> on the
+              Render service (see README for the 8-minute Google Cloud setup), then reload this page and connect.
+            </p>
+          )}
+          {status.configured && !status.connected && (
+            <p>
+              <button type="button" className="btn btn-gold btn-sm" onClick={() => void connect()} disabled={working}>
+                Connect Google Calendar
+              </button>
+              <span className="settings-hint gsync-note">
+                Bookings will appear in your calendar with Google Meet links, and customers receive calendar invites
+                automatically.
+              </span>
+            </p>
+          )}
+          {status.connected && (
+            <p className="gsync-connected">
+              <span className="settings-saved mono">Connected{status.email ? ` as ${status.email}` : ''} ✓</span>
+              <button type="button" className="filter-pill" onClick={() => void disconnect()} disabled={working}>
+                Disconnect
+              </button>
+            </p>
+          )}
+        </div>
+        {status.icsUrl && (
+          <div className="gsync-row">
+            <p className="ld-k mono">Calendar feed (works with any calendar app)</p>
+            <input className="gsync-url mono" readOnly value={status.icsUrl} onFocus={(e) => e.currentTarget.select()} />
+            <p className="settings-hint">
+              Google Calendar → Other calendars → + → From URL → paste. Treat this URL like a password. Google
+              refreshes subscribed feeds every few hours; the Connect option above is instant.
+            </p>
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
 export function SettingsTab({
   settings,
   onSave,
   busy,
+  adminKey,
 }: {
   settings: CalSettings
   onSave: (s: CalSettings) => Promise<boolean>
   busy: boolean
+  adminKey: string
 }) {
   const [draft, setDraft] = useState<CalSettings>(settings)
   const [weekText, setWeekText] = useState<Record<string, string>>(() =>
@@ -57,6 +141,8 @@ export function SettingsTab({
   }
 
   return (
+    <>
+    <GoogleSyncPanel adminKey={adminKey} />
     <section className="admin-panel">
       <h2 className="admin-h mono">Calendar availability</h2>
       <p className="settings-hint">
@@ -118,5 +204,6 @@ export function SettingsTab({
         </div>
       </form>
     </section>
+    </>
   )
 }

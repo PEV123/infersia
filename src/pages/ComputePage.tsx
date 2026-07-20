@@ -256,7 +256,7 @@ export function ComputePage() {
       'What we’re building:',
       building,
     ].filter((l): l is string => l !== null)
-    window.location.href = `mailto:enquiries@infersia.com.au?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`
+    window.location.href = `mailto:sales@infersia.com.au?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`
   }
 
   return (
@@ -361,7 +361,7 @@ export function ComputePage() {
               <div className="form-foot">
                 <button type="submit" className="btn btn-gold">Enquire</button>
                 <p className="form-note">
-                  Opens your mail client — or write to <a href="mailto:enquiries@infersia.com.au">enquiries@infersia.com.au</a>
+                  Opens your mail client — or write to <a href="mailto:sales@infersia.com.au">sales@infersia.com.au</a>
                 </p>
               </div>
             </form>

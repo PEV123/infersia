@@ -30,7 +30,7 @@ const ORG_LD = {
   '@type': 'Organization',
   name: SITE_NAME,
   url: SITE,
-  email: 'enquiries@infersia.com.au',
+  email: 'sales@infersia.com.au',
   description:
     'Australian sovereign AI compute — dedicated GPU hosting for open-weight AI models, processed entirely within Australian jurisdiction.',
   areaServed: 'AU',

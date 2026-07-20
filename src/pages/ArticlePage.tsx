@@ -57,7 +57,7 @@ export function ArticlePage() {
               Bound by the same obligations? <em>We build for the middle.</em>
             </p>
             <div className="article-end-actions">
-              <a className="btn btn-gold" href="mailto:enquiries@infersia.com.au?subject=Access%20enquiry">
+              <a className="btn btn-gold" href="mailto:sales@infersia.com.au?subject=Access%20enquiry">
                 Enquire
               </a>
               <Link className="btn btn-outline" to="/news">

@@ -3411,6 +3411,59 @@ main {
   color: var(--text-2);
 }
 
+/* calendar sync panel */
+
+.gsync-row {
+  margin-bottom: 20px;
+}
+
+.gsync-row:last-child {
+  margin-bottom: 0;
+}
+
+.gsync-note {
+  display: inline-block;
+  margin-left: 14px;
+  max-width: 46ch;
+}
+
+.gsync-connected {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.gsync-url {
+  width: 100%;
+  max-width: 640px;
+  font-size: 11.5px;
+  color: var(--text-2);
+  background: rgba(10, 14, 18, 0.6);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.gsync code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold-bright);
+}
+
+.book-done-meet {
+  margin-top: 14px;
+  font-size: 14px;
+}
+
+.book-done-meet a {
+  color: var(--gold-bright);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  word-break: break-all;
+}
+
 /* admin daily traffic bars */
 
 .daily-bars {

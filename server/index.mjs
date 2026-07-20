@@ -12,6 +12,7 @@ import express from 'express'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { createGoogle } from './google.mjs'
 import { renderHead, routeMeta, sitemapXml } from './seo.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -65,6 +66,9 @@ let leads = loadDoc('leads', null)
 let bookings = loadDoc('bookings', [])
 let blocks = loadDoc('blocks', []) // admin availability blocks: {id, ts, start, end, reason}
 let settings = { ...DEFAULT_SETTINGS, ...loadDoc('settings', {}) }
+
+const CAL_FEED_KEY = process.env.CALENDAR_FEED_KEY || ''
+const google = createGoogle({ loadDoc, saveDoc, site: 'https://www.infersia.com.au' })
 
 // one-time migration from the original append-only lead log
 if (leads === null) {
@@ -305,7 +309,7 @@ app.get('/api/booking/slots', (_req, res) => {
   res.json({ ok: true, ...computeSlots() })
 })
 
-app.post('/api/booking', (req, res) => {
+app.post('/api/booking', async (req, res) => {
   const { start, name, email, org, phone, note } = req.body || {}
   if (!start || !name || !email) return res.status(400).json({ ok: false, error: 'missing fields' })
   const { days, slotMinutes } = computeSlots()
@@ -333,7 +337,24 @@ app.post('/api/booking', (req, res) => {
   lead.updatedAt = booking.ts
   saveDoc('leads', leads)
   appendEvent({ ts: booking.ts, sid: 'server', event: 'call_booked', props: { bookingId: booking.id } })
-  res.json({ ok: true, booking: { id: booking.id, start: booking.start, end: booking.end, durationMin: slotMinutes } })
+
+  const gcal = await google.createEvent(booking)
+  if (gcal) {
+    booking.gcalEventId = gcal.id
+    booking.meetLink = gcal.meetLink
+    saveDoc('bookings', bookings)
+  }
+
+  res.json({
+    ok: true,
+    booking: {
+      id: booking.id,
+      start: booking.start,
+      end: booking.end,
+      durationMin: slotMinutes,
+      meetLink: booking.meetLink || null,
+    },
+  })
 })
 
 // ---------- admin: summary ----------
@@ -444,7 +465,7 @@ app.get('/api/admin/bookings', requireAdmin, (_req, res) => {
   res.json({ ok: true, bookings: sorted })
 })
 
-app.post('/api/admin/bookings', requireAdmin, (req, res) => {
+app.post('/api/admin/bookings', requireAdmin, async (req, res) => {
   const { start, durationMin, name, email, org, phone, note } = req.body || {}
   const startDate = new Date(String(start))
   if (Number.isNaN(startDate.getTime()) || !name) return res.status(400).json({ ok: false, error: 'valid start and name required' })
@@ -467,15 +488,27 @@ app.post('/api/admin/bookings', requireAdmin, (req, res) => {
   }
   bookings.push(booking)
   saveDoc('bookings', bookings)
+  const gcal = await google.createEvent(booking)
+  if (gcal) {
+    booking.gcalEventId = gcal.id
+    booking.meetLink = gcal.meetLink
+    saveDoc('bookings', bookings)
+  }
   res.json({ ok: true, booking })
 })
 
-app.patch('/api/admin/bookings/:id', requireAdmin, (req, res) => {
+app.patch('/api/admin/bookings/:id', requireAdmin, async (req, res) => {
   const booking = bookings.find((b) => b.id === req.params.id)
   if (!booking) return res.status(404).json({ ok: false })
   const { status } = req.body || {}
   if (['confirmed', 'cancelled', 'completed'].includes(status)) booking.status = status
   saveDoc('bookings', bookings)
+  if (status === 'cancelled' && booking.gcalEventId) {
+    await google.deleteEvent(booking.gcalEventId)
+    booking.gcalEventId = null
+    booking.meetLink = ''
+    saveDoc('bookings', bookings)
+  }
   res.json({ ok: true, booking })
 })
 
@@ -515,6 +548,78 @@ app.delete('/api/admin/blocks/:id', requireAdmin, (req, res) => {
   if (blocks.length === before) return res.status(404).json({ ok: false })
   saveDoc('blocks', blocks)
   res.json({ ok: true })
+})
+
+// ---------- calendar feed (ICS) + Google Calendar sync ----------
+
+const icsEsc = (s) =>
+  String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n')
+const icsDate = (d) => new Date(d).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
+
+app.get('/api/calendar.ics', (req, res) => {
+  if (!CAL_FEED_KEY || req.query.key !== CAL_FEED_KEY) return res.status(401).send('unauthorised')
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Infersia//Bookings//EN',
+    'CALSCALE:GREGORIAN',
+    'X-WR-CALNAME:Infersia bookings',
+  ]
+  for (const b of bookings) {
+    if (b.status === 'cancelled') continue
+    lines.push(
+      'BEGIN:VEVENT',
+      `UID:${b.id}@infersia.com.au`,
+      `DTSTAMP:${icsDate(b.ts)}`,
+      `DTSTART:${icsDate(b.start)}`,
+      `DTEND:${icsDate(b.end)}`,
+      `SUMMARY:${icsEsc(`Infersia call — ${b.name}${b.org ? ` (${b.org})` : ''}`)}`,
+      `DESCRIPTION:${icsEsc([b.phone && `Phone: ${b.phone}`, b.email && `Email: ${b.email}`, b.note].filter(Boolean).join('\n'))}`,
+      ...(b.meetLink ? [`LOCATION:${icsEsc(b.meetLink)}`] : []),
+      'END:VEVENT'
+    )
+  }
+  for (const bl of blocks) {
+    lines.push(
+      'BEGIN:VEVENT',
+      `UID:block-${bl.id}@infersia.com.au`,
+      `DTSTAMP:${icsDate(bl.ts)}`,
+      `DTSTART:${icsDate(bl.start)}`,
+      `DTEND:${icsDate(bl.end)}`,
+      `SUMMARY:${icsEsc(`Blocked${bl.reason ? ` — ${bl.reason}` : ''}`)}`,
+      'END:VEVENT'
+    )
+  }
+  lines.push('END:VCALENDAR')
+  res.type('text/calendar').send(lines.join('\r\n'))
+})
+
+app.get('/api/admin/google/status', requireAdmin, (_req, res) => {
+  res.json({
+    ok: true,
+    ...google.status(),
+    icsUrl: CAL_FEED_KEY ? `https://www.infersia.com.au/api/calendar.ics?key=${CAL_FEED_KEY}` : null,
+  })
+})
+
+app.get('/api/admin/google/auth-url', requireAdmin, (_req, res) => {
+  if (!google.configured()) return res.status(400).json({ ok: false, error: 'GOOGLE_CLIENT_ID/SECRET not set' })
+  res.json({ ok: true, url: google.authUrl() })
+})
+
+app.post('/api/admin/google/disconnect', requireAdmin, async (_req, res) => {
+  await google.disconnect()
+  res.json({ ok: true })
+})
+
+app.get('/api/google/callback', async (req, res) => {
+  try {
+    await google.handleCallback(req.query.code, req.query.state)
+    res.redirect('/admin?google=connected')
+  } catch (err) {
+    console.error('google callback failed:', err.message)
+    res.redirect('/admin?google=error')
+  }
 })
 
 // ---------- admin: calendar settings ----------

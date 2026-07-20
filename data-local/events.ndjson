@@ -18,3 +18,11 @@
 {"ts":"2026-07-19T23:59:51.387Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"usage_changed","props":{"tokensPerDay":5000000}}
 {"ts":"2026-07-20T04:29:46.587Z","sid":"664ec464-0a8b-40a9-ac55-916b6bfec961","event":"page_view","props":{"path":"/hosting","ref":""}}
 {"ts":"2026-07-20T04:30:04.249Z","sid":"664ec464-0a8b-40a9-ac55-916b6bfec961","event":"page_view","props":{"path":"/hosting/glm-5-2","ref":""}}
+{"ts":"2026-07-20T05:35:41.533Z","sid":"664ec464-0a8b-40a9-ac55-916b6bfec961","event":"page_view","props":{"path":"/hosting","ref":""}}
+{"ts":"2026-07-20T05:35:42.928Z","sid":"664ec464-0a8b-40a9-ac55-916b6bfec961","event":"page_view","props":{"path":"/hosting/gemma-4-12b","ref":""}}
+{"ts":"2026-07-20T05:35:58.448Z","sid":"664ec464-0a8b-40a9-ac55-916b6bfec961","event":"page_view","props":{"path":"/quote","ref":""}}
+{"ts":"2026-07-20T05:35:58.449Z","sid":"664ec464-0a8b-40a9-ac55-916b6bfec961","event":"quote_page_viewed","props":{}}
+{"ts":"2026-07-20T05:35:59.245Z","sid":"664ec464-0a8b-40a9-ac55-916b6bfec961","event":"usage_changed","props":{"tokensPerDay":5000000}}
+{"ts":"2026-07-20T05:35:59.842Z","sid":"664ec464-0a8b-40a9-ac55-916b6bfec961","event":"quote_viewed","props":{"model":"gemma-4-12b","tokensPerDay":5000000,"term":12,"vs":"fable-5","saving":34033}}
+{"ts":"2026-07-20T05:36:02.926Z","sid":"664ec464-0a8b-40a9-ac55-916b6bfec961","event":"page_view","props":{"path":"/book","ref":""}}
+{"ts":"2026-07-20T05:44:10.475Z","sid":"server","event":"call_booked","props":{"bookingId":"563d95aa-a195-4f62-9d32-15c6a39f8de8"}}

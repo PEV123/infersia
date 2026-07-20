@@ -197,6 +197,7 @@ export function AdminPage() {
           <SettingsTab
             settings={settings}
             busy={busy}
+            adminKey={key}
             onSave={(s) => act(() => adminFetch(key, '/api/admin/settings', { method: 'PUT', body: JSON.stringify(s) }))}
           />
         )}

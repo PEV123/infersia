@@ -42,7 +42,12 @@ export function BookPage() {
     note: '',
   })
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'clash' | 'error'>('idle')
-  const [confirmed, setConfirmed] = useState<{ start: string; end: string; durationMin: number } | null>(null)
+  const [confirmed, setConfirmed] = useState<{
+    start: string
+    end: string
+    durationMin: number
+    meetLink?: string | null
+  } | null>(null)
 
   usePageMeta(STATIC_META['/book'].title, STATIC_META['/book'].description)
   useEffect(() => {
@@ -73,7 +78,9 @@ export function BookPage() {
         return
       }
       if (!res.ok) throw new Error(String(res.status))
-      const json = (await res.json()) as { booking: { start: string; end: string; durationMin: number } }
+      const json = (await res.json()) as {
+        booking: { start: string; end: string; durationMin: number; meetLink?: string | null }
+      }
       setConfirmed(json.booking)
       setState('done')
     } catch {
@@ -108,21 +115,28 @@ export function BookPage() {
                 at {timeLabel(confirmed.start)} ({confirmed.durationMin} minutes, your local time). We'll call you on
                 the details you provided.
               </p>
+              {confirmed.meetLink && (
+                <p className="book-done-meet">
+                  Google Meet: <a href={confirmed.meetLink}>{confirmed.meetLink}</a>
+                  <br />
+                  <span className="book-done-alt">A calendar invite has been sent to your email.</span>
+                </p>
+              )}
               <p className="book-done-alt">
-                Need to change it? Email <a href="mailto:enquiries@infersia.com.au">enquiries@infersia.com.au</a>
+                Need to change it? Email <a href="mailto:sales@infersia.com.au">sales@infersia.com.au</a>
               </p>
             </div>
           ) : (
             <div className="page-rise">
               {loadError && (
                 <p className="est-empty">
-                  Couldn't load availability — email <a href="mailto:enquiries@infersia.com.au">enquiries@infersia.com.au</a>{' '}
+                  Couldn't load availability — email <a href="mailto:sales@infersia.com.au">sales@infersia.com.au</a>{' '}
                   and we'll set a time.
                 </p>
               )}
               {data && data.days.length === 0 && (
                 <p className="est-empty">
-                  No open slots right now — email <a href="mailto:enquiries@infersia.com.au">enquiries@infersia.com.au</a> and
+                  No open slots right now — email <a href="mailto:sales@infersia.com.au">sales@infersia.com.au</a> and
                   we'll find a time.
                 </p>
               )}
@@ -212,7 +226,7 @@ export function BookPage() {
                         {state === 'clash' && <p className="form-error">That slot was just taken — pick another.</p>}
                         {state === 'error' && (
                           <p className="form-error">
-                            Something went wrong — email <a href="mailto:enquiries@infersia.com.au">enquiries@infersia.com.au</a>
+                            Something went wrong — email <a href="mailto:sales@infersia.com.au">sales@infersia.com.au</a>
                           </p>
                         )}
                       </div>

@@ -276,6 +276,12 @@ export function CalendarTab({
               <p className="cal-booking-contact mono">
                 {b.email && <a href={`mailto:${b.email}`}>{b.email}</a>}
                 {b.phone && ` · ${b.phone}`}
+                {b.meetLink && (
+                  <>
+                    {' · '}
+                    <a href={b.meetLink} target="_blank" rel="noreferrer">Meet ↗</a>
+                  </>
+                )}
               </p>
               {b.note && <p className="cal-booking-note">{b.note}</p>}
               {b.status === 'confirmed' && (
