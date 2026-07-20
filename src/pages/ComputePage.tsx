@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from 'react'
+import { useRef, useState, type FormEvent, type MouseEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { Footer } from '../components/Footer'
+import { usePageMeta } from '../lib/usePageMeta'
+import { STATIC_META } from '../seo/shared.mjs'
 
 type BadgeKind = 'available' | 'limited' | 'enquire' | 'mto'
 type UseCase = 'inference' | 'training' | 'finetuning' | 'bulk'
@@ -229,9 +231,7 @@ export function ComputePage() {
   const [building, setBuilding] = useState('')
   const formRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    document.title = 'Compute — Infersia'
-  }, [])
+  usePageMeta(STATIC_META['/compute'].title, STATIC_META['/compute'].description)
 
   const visible = PLATFORMS.filter((p) => filter === 'all' || p.tags.includes(filter))
 

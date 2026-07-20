@@ -1,12 +1,11 @@
-import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Footer } from '../components/Footer'
+import { usePageMeta } from '../lib/usePageMeta'
 import { articles } from '../news/articles'
+import { STATIC_META } from '../seo/shared.mjs'
 
 export function NewsIndex() {
-  useEffect(() => {
-    document.title = 'News — Infersia'
-  }, [])
+  usePageMeta(STATIC_META['/news'].title, STATIC_META['/news'].description)
 
   return (
     <>

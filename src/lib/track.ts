@@ -15,6 +15,7 @@ function sessionId(): string {
 }
 
 export type TrackEvent =
+  | 'page_view'
   | 'quote_page_viewed'
   | 'model_selected'
   | 'usage_changed'

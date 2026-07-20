@@ -51,12 +51,19 @@ export type CalSettings = {
 export type Summary = {
   ok: boolean
   totals: {
+    siteViews: number
+    siteSessions: number
     pageViews: number
     sessions: number
     quotesViewed: number
     leads: number
     bookings: number
     avgSavingViewed: number | null
+  }
+  traffic: {
+    pages: [string, number][]
+    referrers: [string, number][]
+    daily: [string, number][]
   }
   models: [string, number][]
   comparators: [string, number][]

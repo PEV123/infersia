@@ -21,13 +21,27 @@ function Bars({ rows, labelFn }: { rows: [string, number][]; labelFn?: (k: strin
   )
 }
 
+function DailyBars({ rows }: { rows: [string, number][] }) {
+  const max = Math.max(1, ...rows.map(([, n]) => n))
+  return (
+    <div className="daily-bars" role="img" aria-label="Daily site views, last 14 days">
+      {rows.map(([d, n]) => (
+        <div key={d} className="daily-col" title={`${d}: ${n} views`}>
+          <span className="daily-fill" style={{ height: `${Math.max(3, (n / max) * 100)}%` }} />
+          <span className="daily-label mono">{d.slice(3)}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export function DashboardTab({ data }: { data: Summary }) {
   const t = data.totals
   return (
     <>
       <div className="admin-stats">
-        <div className="stat-tile"><span className="stat-n">{t.pageViews}</span><span className="stat-k mono">Page views</span></div>
-        <div className="stat-tile"><span className="stat-n">{t.sessions}</span><span className="stat-k mono">Sessions</span></div>
+        <div className="stat-tile"><span className="stat-n">{t.siteViews}</span><span className="stat-k mono">Site views</span></div>
+        <div className="stat-tile"><span className="stat-n">{t.siteSessions}</span><span className="stat-k mono">Visitors (sessions)</span></div>
         <div className="stat-tile"><span className="stat-n">{t.quotesViewed}</span><span className="stat-k mono">Quotes viewed</span></div>
         <div className="stat-tile"><span className="stat-n">{t.leads}</span><span className="stat-k mono">Leads</span></div>
         <div className="stat-tile"><span className="stat-n">{t.bookings}</span><span className="stat-k mono">Calls booked</span></div>
@@ -35,6 +49,22 @@ export function DashboardTab({ data }: { data: Summary }) {
           <span className="stat-n">{t.avgSavingViewed === null ? '—' : `AU$${Math.round(t.avgSavingViewed / 1000)}k`}</span>
           <span className="stat-k mono">Avg saving shown /yr</span>
         </div>
+      </div>
+
+      <section className="admin-panel">
+        <h2 className="admin-h mono">Traffic — last 14 days</h2>
+        <DailyBars rows={data.traffic.daily} />
+      </section>
+
+      <div className="admin-cols">
+        <section className="admin-panel">
+          <h2 className="admin-h mono">Pages viewed</h2>
+          <Bars rows={data.traffic.pages} />
+        </section>
+        <section className="admin-panel">
+          <h2 className="admin-h mono">Referrers</h2>
+          <Bars rows={data.traffic.referrers} />
+        </section>
       </div>
 
       <div className="admin-cols">

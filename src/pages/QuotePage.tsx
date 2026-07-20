@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } fro
 import { Link, useSearchParams } from 'react-router-dom'
 import { Footer } from '../components/Footer'
 import { track } from '../lib/track'
+import { usePageMeta } from '../lib/usePageMeta'
+import { STATIC_META } from '../seo/shared.mjs'
 import {
   API_MODELS,
   DEFAULT_INPUT_SHARE,
@@ -149,8 +151,8 @@ export function QuotePage() {
     setParams(next, { replace: true })
   }, [selectedId, tokensPerDay, term, comparatorId, inputShare, setParams])
 
+  usePageMeta(STATIC_META['/quote'].title, STATIC_META['/quote'].description)
   useEffect(() => {
-    document.title = 'Pricing — Infersia'
     track('quote_page_viewed')
   }, [])
 

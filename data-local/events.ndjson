@@ -16,3 +16,5 @@
 {"ts":"2026-07-19T23:59:01.839Z","sid":"server","event":"call_booked","props":{"bookingId":"ee96e601-8d9b-4d7b-9636-340f59f92b74"}}
 {"ts":"2026-07-19T23:59:49.663Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"quote_page_viewed","props":{}}
 {"ts":"2026-07-19T23:59:51.387Z","sid":"9e48f00e-c511-4e61-91a0-91b1499ab420","event":"usage_changed","props":{"tokensPerDay":5000000}}
+{"ts":"2026-07-20T04:29:46.587Z","sid":"664ec464-0a8b-40a9-ac55-916b6bfec961","event":"page_view","props":{"path":"/hosting","ref":""}}
+{"ts":"2026-07-20T04:30:04.249Z","sid":"664ec464-0a8b-40a9-ac55-916b6bfec961","event":"page_view","props":{"path":"/hosting/glm-5-2","ref":""}}

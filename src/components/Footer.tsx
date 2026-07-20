@@ -10,9 +10,10 @@ export function Footer() {
           <span className="mono">INFERSIA</span>
         </p>
         <nav className="footer-links" aria-label="Footer">
-          <Link to="/#capabilities">Capabilities</Link>
+          <Link to="/hosting">Models</Link>
           <Link to="/compute">Compute</Link>
           <Link to="/quote">Pricing</Link>
+          <Link to="/#capabilities">Capabilities</Link>
           <Link to="/#sovereignty-wrap">Sovereignty</Link>
           <Link to="/news">News</Link>
           <Link to="/#contact">Contact</Link>

@@ -6,8 +6,10 @@ import { Hero } from '../components/Hero'
 import { Manifesto } from '../components/Manifesto'
 import { Sectors } from '../components/Sectors'
 import { Sovereignty } from '../components/Sovereignty'
+import { usePageMeta } from '../lib/usePageMeta'
 import { scrollToId, useSiteMotion } from '../lib/useSiteMotion'
 import { Scene, type Quality } from '../scene/Scene'
+import { STATIC_META } from '../seo/shared.mjs'
 
 export function HomePage() {
   const quality = useMemo<Quality>(
@@ -21,9 +23,7 @@ export function HomePage() {
   useSiteMotion()
 
   const location = useLocation()
-  useEffect(() => {
-    document.title = 'Infersia — Sovereign AI Infrastructure'
-  }, [])
+  usePageMeta(STATIC_META['/'].title, STATIC_META['/'].description)
   useEffect(() => {
     if (!location.hash) return
     const id = location.hash.slice(1)

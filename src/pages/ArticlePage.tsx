@@ -1,15 +1,16 @@
-import { useEffect } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { Footer } from '../components/Footer'
+import { usePageMeta } from '../lib/usePageMeta'
 import { getArticle } from '../news/articles'
 
 export function ArticlePage() {
   const { slug } = useParams()
   const article = getArticle(slug)
 
-  useEffect(() => {
-    if (article) document.title = `${article.plainTitle} — Infersia`
-  }, [article])
+  usePageMeta(
+    article ? `${article.plainTitle} | Infersia` : 'News — Infersia',
+    article ? article.dek.slice(0, 158) : ''
+  )
 
   if (!article) return <Navigate to="/news" replace />
 

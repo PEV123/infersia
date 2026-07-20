@@ -11,7 +11,7 @@ export function Nav() {
         <span className="nav-word">INFERSIA</span>
       </Link>
       <nav className="nav-links" aria-label="Primary">
-        <Link to="/#capabilities">Capabilities</Link>
+        <Link to="/hosting" aria-current={pathname.startsWith('/hosting') ? 'page' : undefined}>Models</Link>
         <Link to="/compute" aria-current={pathname === '/compute' ? 'page' : undefined}>Compute</Link>
         <Link to="/quote" aria-current={pathname === '/quote' ? 'page' : undefined}>Pricing</Link>
         <Link to="/#sovereignty-wrap">Sovereignty</Link>

@@ -12,6 +12,7 @@ import express from 'express'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { renderHead, routeMeta, sitemapXml } from './seo.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DIST = path.join(__dirname, '..', 'dist')
@@ -97,6 +98,7 @@ if (leads === null) {
 // ---------- analytics ----------
 
 const ALLOWED_EVENTS = new Set([
+  'page_view',
   'quote_page_viewed',
   'model_selected',
   'usage_changed',
@@ -255,6 +257,15 @@ const app = express()
 app.disable('x-powered-by')
 app.use(express.json({ limit: '16kb' }))
 
+// canonical host: the onrender.com origin must not be indexed alongside the real domain
+app.use((req, res, next) => {
+  const host = String(req.headers['x-forwarded-host'] || req.headers.host || '')
+  if (host === 'infersia.onrender.com' || host === 'infersia.com.au') {
+    return res.redirect(301, 'https://www.infersia.com.au' + req.originalUrl)
+  }
+  next()
+})
+
 app.post('/api/track', (req, res) => {
   const { event, props, sid } = req.body || {}
   if (!ALLOWED_EVENTS.has(event)) return res.status(400).json({ ok: false })
@@ -348,15 +359,33 @@ app.get('/api/admin/summary', requireAdmin, (_req, res) => {
     if (t < 35_000_000) return 'Heavy (10–35M)'
     return 'Intensive (35M+)'
   }
+
+  // site traffic (page_view events)
+  const pv = events.filter((e) => e.event === 'page_view')
+  const days = []
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 86_400_000).toISOString().slice(0, 10)
+    days.push([d.slice(5), pv.filter((e) => (e.ts || '').startsWith(d)).length])
+  }
+
   res.json({
     ok: true,
     totals: {
+      siteViews: pv.length,
+      siteSessions: new Set(pv.map((e) => e.sid)).size,
       pageViews: events.filter((e) => e.event === 'quote_page_viewed').length,
       sessions,
       quotesViewed: events.filter((e) => e.event === 'quote_viewed').length,
       leads: leads.length,
       bookings: bookings.filter((b) => b.status === 'confirmed').length,
       avgSavingViewed: savings.length ? Math.round(savings.reduce((a, b) => a + b, 0) / savings.length) : null,
+    },
+    traffic: {
+      pages: tally((e) => (e.event === 'page_view' ? e.props?.path : null)).slice(0, 20),
+      referrers: tally((e) =>
+        e.event === 'page_view' && e.props?.ref && !String(e.props.ref).includes('infersia') ? e.props.ref : null
+      ).slice(0, 12),
+      daily: days,
     },
     models: tally((e) => (e.event === 'model_selected' ? e.props?.model : null)),
     comparators: tally((e) => (e.event === 'comparator_changed' || e.event === 'quote_viewed' ? e.props?.vs : null)),
@@ -531,12 +560,37 @@ app.put('/api/admin/settings', requireAdmin, (req, res) => {
   res.json({ ok: true, settings })
 })
 
-// ---------- static SPA ----------
+// ---------- SEO endpoints ----------
+
+app.get('/sitemap.xml', (_req, res) => {
+  res.type('application/xml').send(sitemapXml())
+})
+
+// ---------- static SPA with per-route meta injection ----------
+
+let indexTemplate = null
+function getIndexTemplate() {
+  if (indexTemplate === null) {
+    try {
+      indexTemplate = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8')
+    } catch {
+      indexTemplate = false
+    }
+  }
+  return indexTemplate
+}
 
 app.use(express.static(DIST, { maxAge: '1h', index: false }))
 app.use((req, res, next) => {
   if ((req.method !== 'GET' && req.method !== 'HEAD') || req.path.startsWith('/api/')) return next()
-  res.sendFile(path.join(DIST, 'index.html'))
+  const template = getIndexTemplate()
+  if (!template) return res.status(503).send('build missing')
+  const meta = routeMeta(req.path)
+  if (meta.robots && meta.robots.includes('noindex')) res.set('X-Robots-Tag', 'noindex')
+  const html = template
+    .replace(/<title>.*?<\/title>/, '')
+    .replace('<!--%SEO%-->', renderHead(meta))
+  res.type('html').send(html)
 })
 
 app.listen(PORT, () => {

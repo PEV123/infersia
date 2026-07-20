@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Footer } from '../components/Footer'
+import { usePageMeta } from '../lib/usePageMeta'
+import { STATIC_META } from '../seo/shared.mjs'
 
 type Slot = { start: string; end: string }
 type SlotDay = { date: string; slots: Slot[] }
@@ -42,8 +44,8 @@ export function BookPage() {
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'clash' | 'error'>('idle')
   const [confirmed, setConfirmed] = useState<{ start: string; end: string; durationMin: number } | null>(null)
 
+  usePageMeta(STATIC_META['/book'].title, STATIC_META['/book'].description)
   useEffect(() => {
-    document.title = 'Book a call — Infersia'
     fetch('/api/booking/slots')
       .then((r) => r.json())
       .then((d: SlotsPayload) => setData(d))
