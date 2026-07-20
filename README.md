@@ -68,6 +68,28 @@ calendar settings. Env: `NODE_VERSION=22`, `DATA_DIR=/data`, `ADMIN_PASSWORD`
 Local dev: `npm run dev` (Vite, port 5180) + `npm run dev:api` (Express on 8790;
 Vite proxies `/api`). Set `ADMIN_PASSWORD` locally to use the admin page.
 
+## SEO
+
+- **Server-injected meta**: Express replaces the `<!--%SEO%-->` marker in the built
+  shell with per-route title/description/canonical/OG/JSON-LD (see
+  [server/seo.mjs](server/seo.mjs)); shared content lives in
+  [src/seo/shared.mjs](src/seo/shared.mjs) and is reused client-side by
+  `usePageMeta` so SPA navigation stays in sync. `/sitemap.xml` is generated from
+  the same registry; `robots.txt` advertises it; `infersia.onrender.com` and the
+  bare apex 301 to `https://www.infersia.com.au`; `/admin` is noindex.
+- **/hosting** pillar ("Australian hosted LLM") + **/hosting/:modelId** pages
+  ("Australia hosted Qwen/GLM/Kimi…") are generated from
+  [src/data/models.json](src/data/models.json) — adding a model there creates its
+  hosting page, sitemap entry, Service/FAQ schema and quote-calculator entry in
+  one edit.
+- **Traffic analytics**: every page view posts a first-party `page_view` event
+  (path + referrer hostname, no cookies/PII); the admin Dashboard shows daily
+  views, pages and referrers alongside the quote-intelligence panels.
+- After each deploy touching routes: resubmit `/sitemap.xml` in Google Search
+  Console (one-time setup: verify the domain property, submit the sitemap).
+- Keyword strategy, competitor SERP map and the 90-day plan live in
+  `SEO-REPORT-AU-AI-HOSTING.md` (local only, not committed).
+
 ## Structure
 
 - `src/pages/` — routes: `HomePage` (the 3D single-page experience), `ComputePage` (`/compute` —
