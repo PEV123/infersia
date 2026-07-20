@@ -2108,6 +2108,30 @@ main {
   max-width: 56ch;
 }
 
+.est-cond-context {
+  border-block: 1px solid var(--line);
+  padding: 14px 0;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.est-cond-line {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+
+.est-cond-k {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+
 .est-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

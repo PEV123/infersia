@@ -12,6 +12,7 @@ import {
   VERIFIED_DATE,
   apiById,
   aud,
+  computeApiCost,
   computeQuote,
   fmtTokens,
   modelById,
@@ -444,20 +445,35 @@ export function QuotePage() {
               <p className="est-empty">Choose a model above to see your estimate.</p>
             )}
 
-            {model && !model.quotable && (
-              <div className="est-conditional">
-                <p className="est-cond-title">
-                  {model.name} — <em>conditional pricing</em>
-                </p>
-                <p className="est-cond-body">
-                  {model.conditionalNote} We'll scope the exact configuration and give you a firm sovereign quote on
-                  enquiry{model.badge === 'weights-pending' ? ' — and we can reserve capacity ahead of release.' : '.'}
-                </p>
-                <button type="button" className="btn btn-gold" onClick={() => { setFormOpen(true); setTimeout(() => document.getElementById('lead-form')?.scrollIntoView({ behavior: prmScroll() }), 40) }}>
-                  Enquire about {model.name}
-                </button>
-              </div>
-            )}
+            {model && !model.quotable && (() => {
+              const apiCost = computeApiCost({ tokensPerDay, inputShare, api: comparator })
+              return (
+                <div className="est-conditional">
+                  <p className="est-cond-title">
+                    {model.name} — <em>conditional pricing</em>
+                  </p>
+                  <p className="est-cond-body">
+                    {model.conditionalNote} We'll scope the exact configuration and give you a firm sovereign quote on
+                    enquiry{model.badge === 'weights-pending' ? ' — and we can reserve capacity ahead of release.' : '.'}
+                  </p>
+                  <div className="est-cond-context">
+                    <p className="est-cond-line">
+                      <span className="mono est-cond-k">Your volume on {comparator.name}</span>
+                      ~{aud(apiCost.apiMonthlyAud)}/mo · ~{aud(apiCost.apiAnnualAud)}/yr at published list prices
+                    </p>
+                    {model.badge !== 'weights-pending' && (
+                      <p className="est-cond-line">
+                        <span className="mono est-cond-k">{model.name} deployments</span>
+                        {model.priceLine} — fixed, unlimited tokens, confirmed on enquiry
+                      </p>
+                    )}
+                  </div>
+                  <button type="button" className="btn btn-gold" onClick={() => { setFormOpen(true); setTimeout(() => document.getElementById('lead-form')?.scrollIntoView({ behavior: prmScroll() }), 40) }}>
+                    Enquire about {model.name}
+                  </button>
+                </div>
+              )
+            })()}
 
             {model && quote && tier && (
               <>

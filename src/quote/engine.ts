@@ -106,6 +106,20 @@ export function computeQuote(opts: {
   }
 }
 
+// API-only cost at a given volume — used for conditional models where the
+// Infersia side can't be priced yet but the comparator's list price can.
+export function computeApiCost(opts: { tokensPerDay: number; inputShare: number; api: ApiModel }): {
+  apiMonthlyAud: number
+  apiAnnualAud: number
+} {
+  const monthlyTokens = opts.tokensPerDay * DAYS_PER_MONTH
+  const fx = 1 / FX_USD_PER_AUD
+  const apiMonthlyAud =
+    ((monthlyTokens * opts.inputShare * opts.api.in) / 1e6) * fx +
+    ((monthlyTokens * (1 - opts.inputShare) * opts.api.out) / 1e6) * fx
+  return { apiMonthlyAud, apiAnnualAud: apiMonthlyAud * 12 }
+}
+
 // Breakeven for the shared tier against an API — used by the honesty-pivot tip.
 export function sharedTierBreakevenPerDay(api: ApiModel, inputShare: number): number {
   const shared = tierById('shared')

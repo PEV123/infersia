@@ -30,3 +30,10 @@
 {"ts":"2026-07-20T06:35:27.944Z","sid":"60dd5756-33fd-467f-9a29-3f3cde7d464c","event":"page_view","props":{"path":"/hosting","ref":""}}
 {"ts":"2026-07-20T06:35:48.289Z","sid":"60dd5756-33fd-467f-9a29-3f3cde7d464c","event":"page_view","props":{"path":"/hosting/deepseek-v4-pro","ref":""}}
 {"ts":"2026-07-20T10:29:43.711Z","sid":"73c45c29-f38d-4a41-ba1b-f7b805d72bc8","event":"page_view","props":{"path":"/compute","ref":""}}
+{"ts":"2026-07-20T10:41:42.321Z","sid":"73c45c29-f38d-4a41-ba1b-f7b805d72bc8","event":"page_view","props":{"path":"/quote","ref":""}}
+{"ts":"2026-07-20T10:41:42.322Z","sid":"73c45c29-f38d-4a41-ba1b-f7b805d72bc8","event":"quote_page_viewed","props":{}}
+{"ts":"2026-07-20T10:41:43.598Z","sid":"73c45c29-f38d-4a41-ba1b-f7b805d72bc8","event":"usage_changed","props":{"tokensPerDay":20000000}}
+{"ts":"2026-07-20T10:42:07.920Z","sid":"73c45c29-f38d-4a41-ba1b-f7b805d72bc8","event":"page_view","props":{"path":"/quote","ref":"localhost"}}
+{"ts":"2026-07-20T10:42:07.921Z","sid":"73c45c29-f38d-4a41-ba1b-f7b805d72bc8","event":"quote_page_viewed","props":{}}
+{"ts":"2026-07-20T10:42:09.510Z","sid":"73c45c29-f38d-4a41-ba1b-f7b805d72bc8","event":"quote_viewed","props":{"model":"glm-5-2","tokensPerDay":20000000,"term":24,"vs":"fable-5","saving":48091}}
+{"ts":"2026-07-20T10:42:09.509Z","sid":"73c45c29-f38d-4a41-ba1b-f7b805d72bc8","event":"usage_changed","props":{"tokensPerDay":20000000}}
