@@ -493,7 +493,7 @@ app.put('/api/admin/settings', requireAdmin, (req, res) => {
 
 app.use(express.static(DIST, { maxAge: '1h', index: false }))
 app.use((req, res, next) => {
-  if (req.method !== 'GET' || req.path.startsWith('/api/')) return next()
+  if ((req.method !== 'GET' && req.method !== 'HEAD') || req.path.startsWith('/api/')) return next()
   res.sendFile(path.join(DIST, 'index.html'))
 })
 
