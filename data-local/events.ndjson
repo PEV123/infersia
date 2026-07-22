@@ -5,3 +5,5 @@
 {"ts":"2026-07-22T03:47:02.105Z","sid":"crawler","event":"page_request","props":{"path":"/hosting","bot":true,"ua":"Googlebot"}}
 {"ts":"2026-07-22T03:47:02.117Z","sid":"crawler","event":"page_request","props":{"path":"/quote","bot":true,"ua":"OpenAI GPTBot"}}
 {"ts":"2026-07-22T03:47:27.881Z","sid":"1e84b110-5498-44bf-92bc-311932c259f4","event":"page_view","props":{"path":"/","ref":"","bot":false,"ua":"Chrome · macOS","channel":"direct","source":"Direct / none"}}
+{"ts":"2026-07-22T05:03:23.498Z","sid":"crawler","event":"page_request","props":{"path":"/hosting/kimi-k3","bot":true,"ua":"curl"}}
+{"ts":"2026-07-22T05:03:23.515Z","sid":"crawler","event":"page_request","props":{"path":"/","bot":true,"ua":"curl"}}

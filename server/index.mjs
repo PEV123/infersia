@@ -824,6 +824,7 @@ app.use((req, res, next) => {
   res.set('Cache-Control', 'no-cache')
   const html = template
     .replace(/<title>.*?<\/title>/, '')
+    .replace(/<meta\s+name="description"[^>]*>/i, '')
     .replace('<!--%SEO%-->', renderHead(meta))
   res.type('html').send(html)
 })
