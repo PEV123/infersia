@@ -65,6 +65,7 @@ export type Summary = {
   totals: {
     siteViews: number
     siteSessions: number
+    botHits: number
     pageViews: number
     sessions: number
     quotesViewed: number
@@ -73,9 +74,14 @@ export type Summary = {
     avgSavingViewed: number | null
   }
   traffic: {
+    daily: [string, number, number][]
     pages: [string, number][]
+    channels: [string, number][]
     referrers: [string, number][]
-    daily: [string, number][]
+    searchTerms: [string, number][]
+    campaigns: [string, number][]
+    bots: [string, number][]
+    botPages: [string, number][]
   }
   models: [string, number][]
   comparators: [string, number][]

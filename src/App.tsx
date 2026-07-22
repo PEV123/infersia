@@ -20,17 +20,41 @@ function ScrollRestore() {
   return null
 }
 
+const CAMPAIGN_PARAMS = [
+  'utm_source',
+  'utm_medium',
+  'utm_campaign',
+  'utm_term',
+  'utm_content',
+  'gclid',
+  'gbraid',
+  'wbraid',
+  'msclkid',
+]
+
+// The first page of a visit carries the referrer + campaign params; capture
+// them once so SPA navigation within the visit doesn't overwrite the source.
+let firstOfSession = true
+
 function TrackPageViews() {
   const { pathname } = useLocation()
   useEffect(() => {
     if (pathname.startsWith('/admin')) return
-    let ref = ''
-    try {
-      ref = document.referrer ? new URL(document.referrer).hostname : ''
-    } catch {
-      ref = ''
+    const payload: Record<string, string> = { path: pathname }
+    if (firstOfSession) {
+      firstOfSession = false
+      payload.ref = (document.referrer || '').slice(0, 400)
+      try {
+        const params = new URLSearchParams(window.location.search)
+        for (const p of CAMPAIGN_PARAMS) {
+          const v = params.get(p)
+          if (v) payload[p] = v.slice(0, 120)
+        }
+      } catch {
+        /* query parsing is best-effort */
+      }
     }
-    track('page_view', { path: pathname, ref })
+    track('page_view', payload)
   }, [pathname])
   return null
 }

@@ -3702,7 +3702,58 @@ main {
   max-width: 42px;
   border-radius: 4px 4px 0 0;
   background: linear-gradient(180deg, var(--gold), rgba(217, 164, 65, 0.35));
-  min-height: 3px;
+  min-height: 0;
+}
+
+.daily-stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.daily-bot {
+  background: rgba(143, 163, 176, 0.3);
+  border-radius: 4px 4px 0 0;
+}
+
+.daily-human {
+  background: linear-gradient(180deg, var(--gold), rgba(217, 164, 65, 0.4));
+  border-radius: 4px 4px 0 0;
+}
+
+.daily-stack .daily-human {
+  border-radius: 0;
+}
+
+.daily-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.legend-human,
+.legend-bot {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+}
+
+.legend-human {
+  background: var(--gold);
+}
+
+.legend-bot {
+  background: rgba(143, 163, 176, 0.4);
+  margin-left: 10px;
 }
 
 .daily-label {

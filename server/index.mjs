@@ -12,6 +12,7 @@ import express from 'express'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { CHANNEL_LABELS, classifyReferrer, classifyUA } from './classify.mjs'
 import { createGoogle } from './google.mjs'
 import { renderHead, routeMeta, sitemapXml } from './seo.mjs'
 
@@ -312,9 +313,23 @@ app.post('/api/track', (req, res) => {
   if (!ALLOWED_EVENTS.has(event)) return res.status(400).json({ ok: false })
   const safeProps = {}
   if (props && typeof props === 'object') {
-    for (const [k, v] of Object.entries(props).slice(0, 12)) {
-      if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') safeProps[clip(k, 40)] = clip(v)
+    for (const [k, v] of Object.entries(props).slice(0, 14)) {
+      if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') safeProps[clip(k, 40)] = clip(v, 400)
     }
+  }
+  // server-side UA classification (more reliable than trusting the client)
+  const { bot, name: uaName } = classifyUA(req.headers['user-agent'])
+  if (event === 'page_view') {
+    safeProps.bot = bot
+    safeProps.ua = uaName
+    const landing = {}
+    for (const p of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'gbraid', 'wbraid', 'msclkid']) {
+      if (safeProps[p]) landing[p] = safeProps[p]
+    }
+    const c = classifyReferrer(safeProps.ref, landing)
+    safeProps.channel = c.channel
+    safeProps.source = c.label
+    if (c.term) safeProps.term = c.term
   }
   appendEvent({ ts: new Date().toISOString(), sid: clip(String(sid || 'anon'), 64), event, props: safeProps })
   res.json({ ok: true })
@@ -453,19 +468,40 @@ app.get('/api/admin/summary', requireAdmin, (_req, res) => {
     return 'Intensive (35M+)'
   }
 
-  // site traffic (page_view events)
-  const pv = events.filter((e) => e.event === 'page_view')
+  // ---- site traffic, split human vs bot ----
+  // page_view fires from the browser (JS) — flagged bot if the UA is a JS-capable bot.
+  // page_request is logged server-side only for non-JS crawlers.
+  const allViews = events.filter((e) => e.event === 'page_view')
+  const human = allViews.filter((e) => !e.props?.bot)
+  const botViews = allViews.filter((e) => e.props?.bot)
+  const crawlerReqs = events.filter((e) => e.event === 'page_request')
+  const botAll = [...botViews, ...crawlerReqs]
+
   const days = []
   for (let i = 13; i >= 0; i--) {
     const d = new Date(Date.now() - i * 86_400_000).toISOString().slice(0, 10)
-    days.push([d.slice(5), pv.filter((e) => (e.ts || '').startsWith(d)).length])
+    days.push([
+      d.slice(5),
+      human.filter((e) => (e.ts || '').startsWith(d)).length,
+      botAll.filter((e) => (e.ts || '').startsWith(d)).length,
+    ])
+  }
+
+  const tallyOf = (list, keyFn) => {
+    const out = {}
+    for (const e of list) {
+      const k = keyFn(e)
+      if (k) out[k] = (out[k] || 0) + 1
+    }
+    return Object.entries(out).sort((a, b) => b[1] - a[1])
   }
 
   res.json({
     ok: true,
     totals: {
-      siteViews: pv.length,
-      siteSessions: new Set(pv.map((e) => e.sid)).size,
+      siteViews: human.length,
+      siteSessions: new Set(human.map((e) => e.sid)).size,
+      botHits: botAll.length,
       pageViews: events.filter((e) => e.event === 'quote_page_viewed').length,
       sessions,
       quotesViewed: events.filter((e) => e.event === 'quote_viewed').length,
@@ -474,11 +510,18 @@ app.get('/api/admin/summary', requireAdmin, (_req, res) => {
       avgSavingViewed: savings.length ? Math.round(savings.reduce((a, b) => a + b, 0) / savings.length) : null,
     },
     traffic: {
-      pages: tally((e) => (e.event === 'page_view' ? e.props?.path : null)).slice(0, 20),
-      referrers: tally((e) =>
-        e.event === 'page_view' && e.props?.ref && !String(e.props.ref).includes('infersia') ? e.props.ref : null
-      ).slice(0, 12),
       daily: days,
+      pages: tallyOf(human, (e) => e.props?.path).slice(0, 20),
+      channels: tallyOf(human, (e) => CHANNEL_LABELS[e.props?.channel] || 'Direct / none').slice(0, 8),
+      referrers: tallyOf(human, (e) => (e.props?.channel && e.props.channel !== 'direct' ? e.props?.source : null)).slice(0, 14),
+      searchTerms: tallyOf(human, (e) => (e.props?.term ? e.props.term : null)).slice(0, 20),
+      campaigns: tallyOf(human, (e) =>
+        e.props?.channel === 'paid' || e.props?.channel === 'campaign' || e.props?.channel === 'email'
+          ? `${e.props?.source}${e.props?.term ? ` — ${e.props.term}` : ''}`
+          : null
+      ).slice(0, 12),
+      bots: tallyOf(botAll, (e) => e.props?.ua || 'Other bot').slice(0, 16),
+      botPages: tallyOf(botAll, (e) => e.props?.path).slice(0, 12),
     },
     models: tally((e) => (e.event === 'model_selected' ? e.props?.model : null)),
     comparators: tally((e) => (e.event === 'comparator_changed' || e.event === 'quote_viewed' ? e.props?.vs : null)),
@@ -763,6 +806,18 @@ app.use((req, res, next) => {
   if ((req.method !== 'GET' && req.method !== 'HEAD') || req.path.startsWith('/api/')) return next()
   const template = getIndexTemplate()
   if (!template) return res.status(503).send('build missing')
+  // Log HTML fetches by crawlers that don't run JS (so they never fire the
+  // client page_view). Humans are captured client-side and skipped here to
+  // avoid double-counting. /admin is excluded.
+  const uaClass = classifyUA(req.headers['user-agent'])
+  if (uaClass.bot && req.method === 'GET' && !req.path.startsWith('/admin')) {
+    appendEvent({
+      ts: new Date().toISOString(),
+      sid: 'crawler',
+      event: 'page_request',
+      props: { path: clip(req.path, 120), bot: true, ua: uaClass.name },
+    })
+  }
   const meta = routeMeta(req.path)
   if (meta.robots && meta.robots.includes('noindex')) res.set('X-Robots-Tag', 'noindex')
   // hashed assets cache long; the shell must always revalidate so deploys show up

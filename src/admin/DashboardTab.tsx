@@ -21,17 +21,25 @@ function Bars({ rows, labelFn }: { rows: [string, number][]; labelFn?: (k: strin
   )
 }
 
-function DailyBars({ rows }: { rows: [string, number][] }) {
-  const max = Math.max(1, ...rows.map(([, n]) => n))
+function DailyBars({ rows }: { rows: [string, number, number][] }) {
+  const max = Math.max(1, ...rows.map(([, h, b]) => h + b))
   return (
-    <div className="daily-bars" role="img" aria-label="Daily site views, last 14 days">
-      {rows.map(([d, n]) => (
-        <div key={d} className="daily-col" title={`${d}: ${n} views`}>
-          <span className="daily-fill" style={{ height: `${Math.max(3, (n / max) * 100)}%` }} />
-          <span className="daily-label mono">{d.slice(3)}</span>
-        </div>
-      ))}
-    </div>
+    <>
+      <div className="daily-bars" role="img" aria-label="Daily human vs bot views, last 14 days">
+        {rows.map(([d, h, b]) => (
+          <div key={d} className="daily-col" title={`${d}: ${h} human · ${b} bot`}>
+            <span className="daily-stack">
+              <span className="daily-fill daily-bot" style={{ height: `${(b / max) * 100}%` }} />
+              <span className="daily-fill daily-human" style={{ height: `${(h / max) * 100}%` }} />
+            </span>
+            <span className="daily-label mono">{d.slice(3)}</span>
+          </div>
+        ))}
+      </div>
+      <p className="daily-legend mono">
+        <span className="legend-human" /> Human <span className="legend-bot" /> Bot / crawler
+      </p>
+    </>
   )
 }
 
@@ -40,9 +48,9 @@ export function DashboardTab({ data }: { data: Summary }) {
   return (
     <>
       <div className="admin-stats">
-        <div className="stat-tile"><span className="stat-n">{t.siteViews}</span><span className="stat-k mono">Site views</span></div>
+        <div className="stat-tile"><span className="stat-n">{t.siteViews}</span><span className="stat-k mono">Human views</span></div>
         <div className="stat-tile"><span className="stat-n">{t.siteSessions}</span><span className="stat-k mono">Visitors (sessions)</span></div>
-        <div className="stat-tile"><span className="stat-n">{t.quotesViewed}</span><span className="stat-k mono">Quotes viewed</span></div>
+        <div className="stat-tile"><span className="stat-n">{t.botHits}</span><span className="stat-k mono">Bot / crawler hits</span></div>
         <div className="stat-tile"><span className="stat-n">{t.leads}</span><span className="stat-k mono">Leads</span></div>
         <div className="stat-tile"><span className="stat-n">{t.bookings}</span><span className="stat-k mono">Calls booked</span></div>
         <div className="stat-tile">
@@ -52,18 +60,48 @@ export function DashboardTab({ data }: { data: Summary }) {
       </div>
 
       <section className="admin-panel">
-        <h2 className="admin-h mono">Traffic — last 14 days</h2>
+        <h2 className="admin-h mono">Traffic — last 14 days (human vs bot)</h2>
         <DailyBars rows={data.traffic.daily} />
       </section>
 
       <div className="admin-cols">
         <section className="admin-panel">
-          <h2 className="admin-h mono">Pages viewed</h2>
+          <h2 className="admin-h mono">Channels (human)</h2>
+          <Bars rows={data.traffic.channels} />
+        </section>
+        <section className="admin-panel">
+          <h2 className="admin-h mono">Referrers (human)</h2>
+          <Bars rows={data.traffic.referrers} />
+        </section>
+      </div>
+
+      <div className="admin-cols">
+        <section className="admin-panel">
+          <h2 className="admin-h mono">Search terms in referrer URLs</h2>
+          {data.traffic.searchTerms.length ? (
+            <Bars rows={data.traffic.searchTerms} />
+          ) : (
+            <p className="admin-empty">
+              None captured. Google strips the query from search referrers — actual organic search terms live in
+              Search Console. Terms appear here only when a referrer URL carries one (some engines, internal search)
+              or from <span className="mono">utm_term</span> on tagged links.
+            </p>
+          )}
+        </section>
+        <section className="admin-panel">
+          <h2 className="admin-h mono">Campaigns & paid (UTM / gclid)</h2>
+          <Bars rows={data.traffic.campaigns} />
+        </section>
+      </div>
+
+      <div className="admin-cols">
+        <section className="admin-panel">
+          <h2 className="admin-h mono">Pages viewed (human)</h2>
           <Bars rows={data.traffic.pages} />
         </section>
         <section className="admin-panel">
-          <h2 className="admin-h mono">Referrers</h2>
-          <Bars rows={data.traffic.referrers} />
+          <h2 className="admin-h mono">Bots & crawlers</h2>
+          <Bars rows={data.traffic.bots} />
         </section>
       </div>
 
